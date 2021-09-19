@@ -1,14 +1,18 @@
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 const router = require('./api/routes');
-const { PORT } = require('./env');
+const { PORT, IS_DEV } = require('./env');
 const { sequelize } = require('./models');
+const { stream } = require('./errors/winston');
+const { errorHandler, notFound } = require('./errors/handler');
 
 const app = express();
 
 app.set('port', PORT || 3003);
 
-sequelize.sync({ force: true })
+//db connect
+sequelize.sync({ force: true }) 
     .then(() => {
         console.log('DB connected!');
     })
@@ -22,9 +26,12 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-
+app.use(morgan(IS_DEV ? 'dev' : 'combined', {stream})); //개발 상태일 땐 'dev' 옵션, 배포 상태일 땐 'combined' 옵션 사용
 app.use('/', router);
+app.use(notFound);
+app.use(errorHandler);
 
-app.listen(app.get('port'), () => {
+//Server start
+app.listen(app.get('port'), () => { 
     console.log(`Listening http://localhost:${app.get('port')} in ${app.get('env')} mode !!!`);
 });
