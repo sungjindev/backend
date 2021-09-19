@@ -15,10 +15,10 @@ const register = async(req,res,next) => {
 const login = async(req,res,next) => {
   const { traineeId, traineePassword } = req.body;
   try {
-    const trainee = await Trainee.findByPk({traineeId});
-    if(!trainee) next(INVALID_TRAINEE_ID);
+    const trainee = await Trainee.findByPk(traineeId);
+    if(!trainee) return next(INVALID_TRAINEE_ID);
     if(trainee.traineePassword != traineePassword)
-      next(INVALID_TRAINEE_PASSWORD);
+      return next(INVALID_TRAINEE_PASSWORD);
     return res.json(createResponse(res, trainee));
   } catch (error) {
     console.error(error);
