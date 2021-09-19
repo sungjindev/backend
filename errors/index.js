@@ -8,8 +8,10 @@ const createError = err => {
 
 const errors = {  
     // 400 Errors
-    INVALID_ID: [400, '유효하지 않은 id입니다.'],
-    INVALID_PASSWORD: [400, '유효하지 않은 비밀번호입니다.'],
+    INVALID_TRAINER_ID: [400, '유효하지 않은 트레이너 아이디입니다.'],
+    INVALID_TRAINEE_ID: [400, '유효하지 않은 트레이니 아이디입니다.'],
+    INVALID_TRAINER_PASSWORD: [400, '유효하지 않은 트레이너 비밀번호입니다.'],
+    INVALID_TRAINEE_PASSWORD: [400, '유효하지 않은 트레이니 비밀번호입니다.'],
     TOKEN_EXPIRED : [400, '만료된 Token입니다.'],
   
     // 401 Errors
@@ -19,9 +21,10 @@ const errors = {
     JSON_WEB_TOKEN_ERROR : [403, '권한이 없는 요청입니다.'],
   
     // 404 Errors
-    USER_NOT_FOUND: [404, '찾을 수 없는 유저입니다.'],
-    USER_DUPLICATED: [404, '중복된 아이디입니다'],
-    EMAIL_DUPLICATED: [404, '중복된 이메일입니다'],
+    TRAINER_NOT_FOUND: [404, '찾을 수 없는 트레이너입니다.'],
+    TRAINEE_NOT_FOUND: [404, '찾을 수 없는 트레이니입니다.'],
+    TRAINER_DUPLICATED: [404, '중복된 트레이너 Id입니다'],
+    TRAINEE_DUPLICATED: [404, '중복된 트레이니 Id입니다'],
     NOT_FOUND: [404, '찾을 수 없는 요청입니다.'],
     EXCEEDED_SMS_COUNT : [404, '하루 전송 건 수를 초과했습니다'],
     EXCEEDED_KEY_COUNT : [404, '하루 인증키 시도 횟수를 초과했습니다'],
