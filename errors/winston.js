@@ -1,6 +1,6 @@
 const fs = require('fs');
 const winston = require('winston');
-const logDir = __dirname + '../logs';
+const logDir = __dirname + '/../logs';
 
 if(!fs.existsSync(logDir)) {    //logDir이 존재하지 않으면 생성
     fs.mkdirSync(logDir);
