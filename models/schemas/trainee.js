@@ -1,23 +1,23 @@
 const Sequelize = require("sequelize");
 
-module.exports = class Trainer extends Sequelize.Model {
+module.exports = class Trainee extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        trainerId: {
+        traineeId: {
           type: Sequelize.STRING(20),
           allowNull: false,
           primaryKey: true,
         },
-        trainerPassword: {
+        traineePassword: {
           type: Sequelize.STRING(100),
           allowNull: false,
         },
-        trainerPhoneNumber: {
+        traineePhoneNumber: {
           type: Sequelize.STRING(20),
           allowNull: false,
         },
-        trainerName: {
+        traineeName: {
           type: Sequelize.STRING(20),
           allowNull: false,
         },
@@ -26,8 +26,8 @@ module.exports = class Trainer extends Sequelize.Model {
         sequelize,
         timestamps: true,
         underscored: false,
-        modelName: "Trainer",
-        tableName: "trainers",
+        modelName: "Trainee",
+        tableName: "trainees",
         paranoid: false,
         charset: "utf8",
         collate: "utf8_general_ci",
@@ -36,6 +36,6 @@ module.exports = class Trainer extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Trainer.hasMany(db.Trainee, {foreignKey: "trainerId", sourceKey: "trainerId"});
+    db.Trainee.belongsTo(db.Trainer, {foreignKey: "trainerId", targetKey: "trainerId"});
   }
 };
