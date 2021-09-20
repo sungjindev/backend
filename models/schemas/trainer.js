@@ -4,17 +4,13 @@ module.exports = class Trainer extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        trainerId: {
+        trainerPhoneNumber: {
           type: Sequelize.STRING(20),
           allowNull: false,
           primaryKey: true,
         },
         trainerPassword: {
           type: Sequelize.STRING(100),
-          allowNull: false,
-        },
-        trainerPhoneNumber: {
-          type: Sequelize.STRING(20),
           allowNull: false,
         },
         trainerName: {
@@ -36,6 +32,6 @@ module.exports = class Trainer extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Trainer.hasMany(db.Trainee, {foreignKey: "trainerId", sourceKey: "trainerId"});
+    db.Trainer.hasMany(db.Trainee, {foreignKey: "trainerPhoneNumber", sourceKey: "trainerPhoneNumber"});
   }
 };

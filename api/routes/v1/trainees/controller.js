@@ -1,9 +1,12 @@
 const { Trainee } = require('../../../../models');
 const { createResponse } = require('../../../../utils/response');
-const { INVALID_TRAINEE_ID, INVALID_TRAINEE_PASSWORD } = require('../../../../errors');
+const { INVALID_TRAINEE_PHONE, INVALID_TRAINEE_PASSWORD } = require('../../../../errors');
+const { saltRounds } = require('../../../../env');
+const bcrypt = require('bcrypt');
 
 const register = async(req,res,next) => {
   try {
+    req.body.traineePassword = bcrypt.hashSync(req.body.traineePassword, parseInt(saltRounds));
     const trainee = await Trainee.create(req.body);
     return res.json(createResponse(res, trainee));
   } catch (error) {
@@ -13,12 +16,13 @@ const register = async(req,res,next) => {
 };
 
 const login = async(req,res,next) => {
-  const { traineeId, traineePassword } = req.body;
+  const { traineePhoneNumber, traineePassword } = req.body;
   try {
-    const trainee = await Trainee.findByPk({traineeId});
-    if(!trainee) next(INVALID_TRAINEE_ID);
-    if(trainee.traineePassword != traineePassword)
-      next(INVALID_TRAINEE_PASSWORD);
+    const trainee = await Trainee.findByPk(traineePhoneNumber);
+    if(!trainee) return next(INVALID_TRAINEE_PHONE);
+    const same = bcrypt.compareSync(traineePassword, trainee.traineePassword);
+    if(!same)
+      return next(INVALID_TRAINEE_PASSWORD);
     return res.json(createResponse(res, trainee));
   } catch (error) {
     console.error(error);

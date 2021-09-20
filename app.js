@@ -5,7 +5,7 @@ const router = require('./api/routes');
 const { PORT, IS_DEV } = require('./env');
 const { sequelize } = require('./models');
 const { stream } = require('./errors/winston');
-const { errorHandler, notFound } = require('./errors/handler');
+const { notFound, errorHandler } = require('./errors/handler');
 
 const app = express();
 
