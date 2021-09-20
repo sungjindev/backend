@@ -1,6 +1,6 @@
 const { Trainer } = require('../../../../models');
 const { createResponse } = require('../../../../utils/response');
-const { INVALID_TRAINER_ID, INVALID_TRAINER_PASSWORD } = require('../../../../errors');
+const { INVALID_TRAINER_PHONE, INVALID_TRAINER_PASSWORD } = require('../../../../errors');
 
 const register = async(req,res,next) => {
   try {
@@ -15,8 +15,8 @@ const register = async(req,res,next) => {
 const login = async(req,res,next) => {
   const { trainerId, trainerPassword } = req.body;
   try {
-    const trainer = await Trainer.findByPk(trainerId);
-    if(!trainer) return next(INVALID_TRAINER_ID);
+    const trainer = await Trainer.findByPk(trainerPhoneNumber);
+    if(!trainer) return next(INVALID_TRAINER_PHONE);
     if(trainer.trainerPassword != trainerPassword)
       return next(INVALID_TRAINER_PASSWORD);
     return res.json(createResponse(res, trainer));

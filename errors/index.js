@@ -8,8 +8,8 @@ const createError = err => {
 
 const errors = {  
     // 400 Errors
-    INVALID_TRAINER_ID: [400, '유효하지 않은 트레이너 아이디입니다.'],
-    INVALID_TRAINEE_ID: [400, '유효하지 않은 트레이니 아이디입니다.'],
+    INVALID_TRAINER_PHONE: [400, '유효하지 않은 트레이너 휴대폰 번호입니다.'],
+    INVALID_TRAINEE_PHONE: [400, '유효하지 않은 트레이니 휴대폰 번호입니다.'],
     INVALID_TRAINER_PASSWORD: [400, '유효하지 않은 트레이너 비밀번호입니다.'],
     INVALID_TRAINEE_PASSWORD: [400, '유효하지 않은 트레이니 비밀번호입니다.'],
     TOKEN_EXPIRED : [400, '만료된 Token입니다.'],

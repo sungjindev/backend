@@ -4,17 +4,13 @@ module.exports = class Trainee extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
-        traineeId: {
+        traineePhoneNumber: {
           type: Sequelize.STRING(20),
           allowNull: false,
           primaryKey: true,
         },
         traineePassword: {
           type: Sequelize.STRING(100),
-          allowNull: false,
-        },
-        traineePhoneNumber: {
-          type: Sequelize.STRING(20),
           allowNull: false,
         },
         traineeName: {
