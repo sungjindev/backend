@@ -32,6 +32,6 @@ module.exports = class Trainer extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Trainer.hasMany(db.Trainee, {foreignKey: "trainerId", sourceKey: "trainerId"});
+    db.Trainer.hasMany(db.Trainee, {foreignKey: "trainerPhoneNumber", sourceKey: "trainerPhoneNumber"});
   }
 };
