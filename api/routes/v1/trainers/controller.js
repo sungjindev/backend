@@ -13,7 +13,7 @@ const register = async(req,res,next) => {
 };
 
 const login = async(req,res,next) => {
-  const { trainerId, trainerPassword } = req.body;
+  const { trainerPhoneNumber, trainerPassword } = req.body;
   try {
     const trainer = await Trainer.findByPk(trainerPhoneNumber);
     if(!trainer) return next(INVALID_TRAINER_PHONE);
