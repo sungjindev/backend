@@ -12,7 +12,7 @@ const app = express();
 app.set('port', PORT || 3003);
 
 //db connect
-sequelize.sync({ force: true })   //force가 true이면 DB에 있는 모든 정보를 지우고 다시 만든다.
+sequelize.sync({ force: false })   //force가 true이면 DB에 있는 모든 정보를 지우고 다시 만든다.
     .then(() => {
         console.log('DB connected!');
     })
