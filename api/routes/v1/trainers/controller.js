@@ -33,7 +33,9 @@ const login = async(req,res,next) => {
     await token.addTrainer(trainer);  //저장 후 올바른 Trainer 인스턴스와 관계 맺어주기
     const accessToken = await jwt.sign({trainerPhoneNumber}, JWT_SECRET_KEY, {algorithm: 'HS512', expiresIn: '1h'});  //accessToken 생성 
     res.cookie('refreshToken', refreshToken, {secure: true, httpOnly: true}); //refreshToken은 secure, httpOnly 옵션을 가진 쿠키로 보내 CSRF 공격을 방어
-    return res.json(createResponse(res, {accessToken}));  //accessToken은 Json형식으로 보내고 Client는 로컬에 잘 가지고 있다가 api요청을 할때마다 Authorization 헤더에 넣어서 보내주게 된다.
+    res.cookie('accessToken', accessToken, {secure: true, httpOnly: true}); //accessToken은 secure, httpOnly 옵션을 가진 쿠키로 보내 CSRF 공격을 방어
+    //원래는 accessToken은 authorization header에 보내주는 게 보안상 좋지만, MVP 모델에서는 간소화
+    return res.json(createResponse(res, trainer)); 
   } catch (error) {
     console.error(error);
     next(error);
