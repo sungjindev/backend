@@ -1,12 +1,11 @@
 const { Trainer } = require('../../../../models');
 const { createResponse } = require('../../../../utils/response');
 const { INVALID_TRAINER_PHONE, INVALID_TRAINER_PASSWORD } = require('../../../../errors');
-const { SALT_ROUNDS, COOKIE_NAME } = require('../../../../env');
+const { SALT_ROUNDS, ROOT_DIR, JWT_SECRET_KEY_FILE } = require('../../../../env');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { join } = require('path');
-const privateKey = fs.readFileSync(join(__dirname, '../../../../keys/private.key'));
 
 const register = async(req,res,next) => {
   try {
@@ -20,6 +19,7 @@ const register = async(req,res,next) => {
 };
 
 const login = async(req,res,next) => {
+  const JWT_SECRET_KEY = fs.readFileSync(join(ROOT_DIR, 'keys', JWT_SECRET_KEY_FILE));
   const { trainerPhoneNumber, trainerPassword } = req.body;
   try {
     const trainer = await Trainer.findByPk(trainerPhoneNumber);
@@ -27,8 +27,10 @@ const login = async(req,res,next) => {
     const same = bcrypt.compareSync(trainerPassword, trainer.trainerPassword);
     if(!same)
       return next(INVALID_TRAINER_PASSWORD);
-    const token = await jwt.sign({trainerPhoneNumber}, privateKey, {algorithm: 'HS512', expiresIn: '7d'});
-    res.cookie(COOKIE_NAME, token);
+
+    
+    const accessToken = await jwt.sign({trainerPhoneNumber}, JWT_SECRET_KEY, {algorithm: 'HS512', expiresIn: '1h'});
+
     return res.json(createResponse(res, trainer));
   } catch (error) {
     console.error(error);
