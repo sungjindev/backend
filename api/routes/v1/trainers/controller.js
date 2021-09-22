@@ -42,14 +42,4 @@ const login = async(req,res,next) => {
   }
 };
 
-const test = (req,res,next) => {
-  try {
-    console.log("성공적");
-    return res.json(createResponse(res, "성공했어요"));
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-};
-
-module.exports = { register, login, test };
+module.exports = { register, login };
