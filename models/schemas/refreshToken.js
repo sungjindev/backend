@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize');
 
-module.exports = class refreshToken extends Sequelize.model { 
+module.exports = class RefreshToken extends Sequelize.model { 
   static init(sequelize) {
     return super.init (
       {
-        token: {
+        refreshToken: {
           type: Sequelize.STRING(100),
           allowNull: false,
           primaryKey: true
