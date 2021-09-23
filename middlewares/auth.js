@@ -8,12 +8,20 @@ const { RefreshToken, Trainer, Trainee } = require('../models');
 
 const checkTokens = async(req,res,next) => {
   const JWT_SECRET_KEY = fs.readFileSync(join(ROOT_DIR, 'keys', JWT_SECRET_KEY_FILE));
+  const {query: {autoLogin}} = req;
   try {
     if(req.cookies.accessToken == undefined) next(LOGIN_REQUIRED);
     const accessToken = verifyToken(req.cookies.accessToken); 
     const refreshToken = verifyToken(req.cookies.refreshToken);
 
-    if(accessToken == null) {
+    if(!autoLogin) {
+      if(!accessToken)  //자동로그인 기능이 꺼져있고 accessToken이 유효하지 않은 경우
+        next(LOGIN_REQUIRED);
+      else  //자동로그인 기능이 꺼져있지만 accessToken이 유효한 경우
+        next();
+    }
+    //아래부터는 자동로그인 기능이 켜져있는 경우
+    if(accessToken == null) { 
       if(refreshToken == null)  //accessToken, refreshToken 모두 만료된 경우, 다시 로그인 하도록 요구
         next(LOGIN_REQUIRED);
       else {  //accessToken은 만료되었지만 refreshToken은 유효한 경우
