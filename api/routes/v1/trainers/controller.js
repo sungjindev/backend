@@ -1,7 +1,7 @@
 const { Trainer, RefreshToken } = require('../../../../models');
 const { createResponse } = require('../../../../utils/response');
 const { INVALID_TRAINER_PHONE, INVALID_TRAINER_PASSWORD } = require('../../../../errors');
-const { SALT_ROUNDS, ROOT_DIR, JWT_SECRET_KEY_FILE } = require('../../../../env');
+const { SALT_ROUNDS, JWT_SECRET_KEY_FILE } = require('../../../../env');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -19,7 +19,7 @@ const register = async(req,res,next) => {
 };
 
 const login = async(req,res,next) => {
-  const JWT_SECRET_KEY = fs.readFileSync(join(ROOT_DIR, 'keys', JWT_SECRET_KEY_FILE));
+  const JWT_SECRET_KEY = fs.readFileSync(join('../../../../keys/', JWT_SECRET_KEY_FILE));
   const { trainerPhoneNumber, trainerPassword } = req.body;
   try {
     const trainer = await Trainer.findByPk(trainerPhoneNumber);

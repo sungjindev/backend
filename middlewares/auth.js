@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { ROOT_DIR, JWT_SECRET_KEY_FILE } = require('../env');
+const { JWT_SECRET_KEY_FILE } = require('../env');
 const { LOGIN_REQUIRED, TOKEN_EXPIRED, JSON_WEB_TOKEN_ERROR } = require('../errors');
 const fs = require('fs');
 const { join } = require('path');
@@ -7,7 +7,7 @@ const { verifyToken } = require('../utils/jwt');
 const { RefreshToken, Trainer, Trainee } = require('../models');
 
 const checkTokens = async(req,res,next) => {
-  const JWT_SECRET_KEY = fs.readFileSync(join(ROOT_DIR, 'keys', JWT_SECRET_KEY_FILE));
+  const JWT_SECRET_KEY = fs.readFileSync(join('../keys/', JWT_SECRET_KEY_FILE));
   const {query: {autoLogin}} = req;
   try {
     if(req.cookies.accessToken == undefined) next(LOGIN_REQUIRED);
