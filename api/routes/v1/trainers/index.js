@@ -5,6 +5,7 @@ const { checkTokens } = require('../../../../middlewares/auth');
 
 router.post('/register', controller.register);
 router.post('/login', controller.login);
+router.get('/logout/:trainerPhoneNumber', controller.logout);
 router.get('/', checkTokens, controller.test);
 
 module.exports = router;
