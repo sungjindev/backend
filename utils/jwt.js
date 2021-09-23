@@ -5,9 +5,9 @@ const { ROOT_DIR, JWT_SECRET_KEY_FILE } = require('../env');
 
 
 const verifyToken = (token) => {
-  const JWT_SECRET_KEY = readFileSync(join(ROOT_DIR, 'keys', JWT_SECRET_KEY_FILE));
+  // const JWT_SECRET_KEY = readFileSync(join(ROOT_DIR, 'keys', JWT_SECRET_KEY_FILE));
   try {
-    return jwt.verify(token, JWT_SECRET_KEY);
+    return jwt.verify(token, JWT_SECRET_KEY_FILE);
   } catch (error) {
     if(error.name == "TokenExpiredError") return null;
     if(error.name == "JsonWebTokenError") return null;
