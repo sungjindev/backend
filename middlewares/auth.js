@@ -7,7 +7,7 @@ const { verifyToken } = require('../utils/jwt');
 const { RefreshToken, Trainer, Trainee } = require('../models');
 
 const checkTokens = async(req,res,next) => {
-  const JWT_SECRET_KEY = fs.readFileSync(join('../keys/', JWT_SECRET_KEY_FILE));
+  const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../keys/', JWT_SECRET_KEY_FILE));
   const {query: {autoLogin}} = req;
   try {
     if(req.cookies.accessToken == undefined) next(LOGIN_REQUIRED);

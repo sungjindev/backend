@@ -19,7 +19,7 @@ const register = async(req,res,next) => {
 };
 
 const login = async(req,res,next) => {
-  const JWT_SECRET_KEY = fs.readFileSync(join('../../../../keys/', JWT_SECRET_KEY_FILE));
+  const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../../../../keys/', JWT_SECRET_KEY_FILE));
   const { traineePhoneNumber, traineePassword } = req.body;
   try {
     const trainee = await Trainee.findByPk(traineePhoneNumber);
