@@ -19,7 +19,7 @@ const register = async(req,res,next) => {
 };
 
 const login = async(req,res,next) => {
-  const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../../../../keys/', JWT_SECRET_KEY_FILE));
+  // const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../../../../keys/', JWT_SECRET_KEY_FILE));
   const { traineePhoneNumber, traineePassword } = req.body;
   try {
     const trainee = await Trainee.findByPk(traineePhoneNumber);
@@ -28,7 +28,7 @@ const login = async(req,res,next) => {
     if(!same)
       return next(INVALID_TRAINEE_PASSWORD);
 
-    const refreshToken = await jwt.sign({}, JWT_SECRET_KEY, {algorithm: 'HS512', expiresIn: '14d'});  //refreshToken은 DB에 저장
+    const refreshToken = await jwt.sign({}, JWT_SECRET_KEY_FILE, {algorithm: 'HS512', expiresIn: '14d'});  //refreshToken은 DB에 저장
     const check = await RefreshToken.findOne({where: {traineePhoneNumber}});
     if(check) {
       await check.update({refreshToken});

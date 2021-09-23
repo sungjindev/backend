@@ -7,7 +7,7 @@ const { verifyToken } = require('../utils/jwt');
 const { RefreshToken, Trainer, Trainee } = require('../models');
 
 const checkTokens = async(req,res,next) => {
-  const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../keys/', JWT_SECRET_KEY_FILE));
+  // const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../keys/', JWT_SECRET_KEY_FILE));
   const {query: {autoLogin}} = req;
   try {
     if(req.cookies.accessToken == undefined) next(LOGIN_REQUIRED);
@@ -28,14 +28,14 @@ const checkTokens = async(req,res,next) => {
         const refresh = await RefreshToken.findOne({where: {refreshToken: req.cookies.refreshToken}});
         if(await refresh.getTrainer()) { //Trainer의 refreshToken인 경우
           const trainer = await refresh.getTrainer();
-          const newAccessToken = await jwt.sign({trainerPhoneNumber: trainer.trainerPhoneNumber}, JWT_SECRET_KEY, {algorithm: 'HS512', expiresIn: '1h'});
+          const newAccessToken = await jwt.sign({trainerPhoneNumber: trainer.trainerPhoneNumber}, JWT_SECRET_KEY_FILE, {algorithm: 'HS512', expiresIn: '1h'});
           res.cookie('accessToken', newAccessToken, {httpOnly: true});
           req.cookies.accessToken = newAccessToken; //당장 다음 미들웨어에서 써야되기 때문에 처리해주는 듯 싶다.
           next();
         } 
         else {  //Trainee의 refreshToken인 경우
           const trainee = await refresh.getTrainee();
-          const newAccessToken = await jwt.sign({traineePhoneNumber: trainee.traineePhoneNumber}, JWT_SECRET_KEY, {algorithm: 'HS512', expiresIn: '1h'});
+          const newAccessToken = await jwt.sign({traineePhoneNumber: trainee.traineePhoneNumber}, JWT_SECRET_KEY_FILE, {algorithm: 'HS512', expiresIn: '1h'});
           res.cookie('accessToken', newAccessToken, {httpOnly: true});
           req.cookies.accessToken = newAccessToken; //당장 다음 미들웨어에서 써야되기 때문에 처리해주는 듯 싶다.
           next();
@@ -44,7 +44,7 @@ const checkTokens = async(req,res,next) => {
     } 
     else {
       if(refreshToken == null) {  //accessToken은 유효하지만, refreshToken은 만료된 경우
-        const newRefreshToken = await jwt.sign({}, JWT_SECRET_KEY, {algorithm: 'HS512', expiresIn: '14d'});  //refreshToken은 DB에 저장
+        const newRefreshToken = await jwt.sign({}, JWT_SECRET_KEY_FILE, {algorithm: 'HS512', expiresIn: '14d'});  //refreshToken은 DB에 저장
         if(accessToken.trainerPhoneNumber) {  //Trainer의 accessToken인 경우
           const trainer = await Trainer.findByPk(accessToken.trainerPhoneNumber);
           const refresh = await trainer.getRefreshToken();

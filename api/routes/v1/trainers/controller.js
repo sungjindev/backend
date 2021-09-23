@@ -19,7 +19,7 @@ const register = async(req,res,next) => {
 };
 
 const login = async(req,res,next) => {
-  const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../../../../keys/', JWT_SECRET_KEY_FILE));
+  // const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../../../../keys/', JWT_SECRET_KEY_FILE));
   const { trainerPhoneNumber, trainerPassword } = req.body;
   try {
     const trainer = await Trainer.findByPk(trainerPhoneNumber);
@@ -28,7 +28,7 @@ const login = async(req,res,next) => {
     if(!same)
       return next(INVALID_TRAINER_PASSWORD);
 
-    const refreshToken = await jwt.sign({}, JWT_SECRET_KEY, {algorithm: 'HS512', expiresIn: '14d'});  //refreshToken은 DB에 저장
+    const refreshToken = await jwt.sign({}, JWT_SECRET_KEY_FILE, {algorithm: 'HS512', expiresIn: '14d'});  //refreshToken은 DB에 저장
     const check = await RefreshToken.findOne({where: {trainerPhoneNumber}});
     if(check) {
       await check.update({refreshToken});
@@ -38,7 +38,7 @@ const login = async(req,res,next) => {
       await token.setTrainer(trainer);  //저장 후 올바른 Trainer 인스턴스와 관계 맺어주기
     }
 
-    const accessToken = await jwt.sign({trainerPhoneNumber}, JWT_SECRET_KEY, {algorithm: 'HS512', expiresIn: '1h'});  //accessToken 생성 
+    const accessToken = await jwt.sign({trainerPhoneNumber}, JWT_SECRET_KEY_FILE, {algorithm: 'HS512', expiresIn: '1h'});  //accessToken 생성 
     res.cookie('refreshToken', refreshToken, {httpOnly: true}); //refreshToken은 secure, httpOnly 옵션을 가진 쿠키로 보내 CSRF 공격을 방어
     res.cookie('accessToken', accessToken, {httpOnly: true}); //accessToken은 secure, httpOnly 옵션을 가진 쿠키로 보내 CSRF 공격을 방어
     //원래는 accessToken은 authorization header에 보내주는 게 보안상 좋지만, MVP 모델에서는 간소화
