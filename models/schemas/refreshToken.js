@@ -5,7 +5,7 @@ module.exports = class RefreshToken extends Sequelize.Model {
     return super.init (
       {
         refreshToken: {
-          type: Sequelize.STRING(100),
+          type: Sequelize.STRING(300),
           allowNull: false,
         }
       },
