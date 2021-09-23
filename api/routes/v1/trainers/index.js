@@ -1,10 +1,10 @@
 const { Router } = require('express');
 const router = Router();
 const controller = require('./controller');
-const { verifyToken } = require('../../../../middlewares/verifyToken');
+const { checkTokens } = require('../../../../middlewares/auth');
 
 router.post('/register', controller.register);
 router.post('/login', controller.login);
-router.get('/', verifyToken, controller.test);
+router.get('/', checkTokens, controller.test);
 
 module.exports = router;
