@@ -54,7 +54,7 @@ const logout = async(req,res,next) => {
   try {
     const refreshToken = await RefreshToken.destroy({where: {trainerPhoneNumber}});  //db에서 trainer와 연결된 refreshToken 제거
     if(!refreshToken)
-      next(ALREADY_LOGGED_OUT);
+      return next(ALREADY_LOGGED_OUT);
     res.clearCookie('refreshToken');  //쿠키에 저장된 모든 토큰을 제거
     res.clearCookie('accessToken');
     return res.json(createResponse(res));
