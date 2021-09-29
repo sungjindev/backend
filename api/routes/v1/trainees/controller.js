@@ -1,6 +1,6 @@
 const { Trainee, RefreshToken } = require('../../../../models');
 const { createResponse } = require('../../../../utils/response');
-const { INVALID_TRAINEE_PHONE, INVALID_TRAINEE_PASSWORD } = require('../../../../errors');
+const { INVALID_TRAINEE_PHONE, INVALID_TRAINEE_PASSWORD, ALREADY_LOGGED_OUT } = require('../../../../errors');
 const { SALT_ROUNDS, JWT_SECRET_KEY_FILE } = require('../../../../env');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
@@ -52,7 +52,9 @@ const login = async(req,res,next) => {
 const logout = async(req,res,next) => {
   const {params: {traineePhoneNumber}} = req;
   try {
-    await RefreshToken.destroy({where: {traineePhoneNumber}});  //db에서 trainer와 연결된 refreshToken 제거
+    const refreshToken = await RefreshToken.destroy({where: {traineePhoneNumber}});  //db에서 trainer와 연결된 refreshToken 제거
+    if(!refreshToken)
+      return next(ALREADY_LOGGED_OUT);
     res.clearCookie('refreshToken');  //쿠키에 저장된 모든 토큰을 제거
     res.clearCookie('accessToken');
     return res.json(createResponse(res));
