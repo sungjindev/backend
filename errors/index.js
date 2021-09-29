@@ -13,6 +13,7 @@ const errors = {
     INVALID_TRAINER_PASSWORD: [400, '유효하지 않은 트레이너 비밀번호입니다.'],
     INVALID_TRAINEE_PASSWORD: [400, '유효하지 않은 트레이니 비밀번호입니다.'],
     TOKEN_EXPIRED : [400, '만료된 Token입니다.'],
+    ALREADY_LOGGED_OUT : [400, '이미 로그아웃된 사용자입니다.'],
   
     // 401 Errors
     LOGIN_REQUIRED: [401, '로그인이 필요합니다.'],
