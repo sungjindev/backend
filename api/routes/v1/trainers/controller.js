@@ -64,6 +64,19 @@ const logout = async(req,res,next) => {
   }
 };
 
+const resetPassword = async(req,res,next) => {
+  const { trainerPhoneNumber, trainerPassword } = req.body;
+  try {
+    const trainer = await Trainer.findByPk(trainerPhoneNumber);
+    if(!trainer) return next(INVALID_TRAINER_PHONE);
+    await trainer.update({trainerPassword});
+    return res.json(createResponse(res));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 const test = async(req,res,next) => {
   try {
     console.log("성 공 적");
@@ -78,4 +91,4 @@ const test = async(req,res,next) => {
   }
 };
 
-module.exports = { register, login, logout, test };
+module.exports = { register, login, logout, resetPassword, test };
