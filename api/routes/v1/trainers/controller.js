@@ -1,6 +1,6 @@
 const { Trainer, RefreshToken } = require('../../../../models');
 const { createResponse } = require('../../../../utils/response');
-const { INVALID_TRAINER_PHONE, INVALID_TRAINER_PASSWORD, ALREADY_LOGGED_OUT } = require('../../../../errors');
+const { INVALID_TRAINER_PHONE, INVALID_TRAINER_PASSWORD, ALREADY_LOGGED_OUT, SAME_PASSWORD } = require('../../../../errors');
 const { SALT_ROUNDS, JWT_SECRET_KEY_FILE } = require('../../../../env');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
@@ -64,6 +64,26 @@ const logout = async(req,res,next) => {
   }
 };
 
+const resetPassword = async(req,res,next) => {
+  const { trainerPhoneNumber, trainerPassword } = req.body;
+  try {
+    const trainer = await Trainer.findByPk(trainerPhoneNumber);
+    if(!trainer) return next(INVALID_TRAINER_PHONE);
+    const same = bcrypt.compareSync(trainerPassword, trainer.trainerPassword);
+    if(same)  //기존의 비밀번호와 동일한 비밀번호는 아닌지 검사
+      return next(SAME_PASSWORD);
+    const newTrainerPassword = bcrypt.hashSync(trainerPassword, parseInt(SALT_ROUNDS));
+    await trainer.update({trainerPassword: newTrainerPassword});
+    await RefreshToken.destroy({where: {trainerPhoneNumber}});  //db에서 trainer와 연결된 refreshToken 제거
+    res.clearCookie('refreshToken');  //쿠키에 저장된 모든 토큰을 제거
+    res.clearCookie('accessToken');
+    return res.json(createResponse(res));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 const test = async(req,res,next) => {
   try {
     console.log("성 공 적");
@@ -78,4 +98,4 @@ const test = async(req,res,next) => {
   }
 };
 
-module.exports = { register, login, logout, test };
+module.exports = { register, login, logout, resetPassword, test };
