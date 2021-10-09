@@ -17,6 +17,11 @@ const makeSignature = () => {
   return signature;
 };
 
+const makeAuthNumber = () => {
+  const random = Math.floor(Math.random()*1000000);
+  return random;
+};
+
 const makeMessage = (phone, authNumber) => {
   const signature = makeSignature();
   const date = Date.now().toString;
@@ -43,4 +48,4 @@ const makeMessage = (phone, authNumber) => {
   return form;
 };
 
-module.exports = {makeSignature, makeMessage};
+module.exports = {makeSignature, makeAuthNumber, makeMessage};
