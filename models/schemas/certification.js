@@ -4,6 +4,12 @@ module.exports = class Certification extends Sequelize.Model {
   static init(sequelize) {
     return super.init (
       {
+        trainerPhoneNumber: {
+          type: Sequelize.STRING(20)
+        },
+        traineePhoneNumber: {
+          type: Sequelize.STRING(20)
+        },
         authNumber: {
           type: Sequelize.INTEGER(6).UNSIGNED,
           allowNull: false,
@@ -36,7 +42,5 @@ module.exports = class Certification extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.RefreshToken.belongsTo(db.Trainer, {foreignKey: "trainerPhoneNumber", targetKey: "trainerPhoneNumber"});
-    db.RefreshToken.belongsTo(db.Trainee, {foreignKey: "traineePhoneNumber", targetKey: "traineePhoneNumber"});
   }
 };

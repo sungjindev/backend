@@ -34,6 +34,5 @@ module.exports = class Trainee extends Sequelize.Model {
   static associate(db) {
     db.Trainee.belongsTo(db.Trainer, {foreignKey: "trainerPhoneNumber", targetKey: "trainerPhoneNumber"});
     db.Trainee.hasOne(db.RefreshToken, {foreignKey: "traineePhoneNumber", sourceKey: "traineePhoneNumber"});
-    db.Trainee.hasOne(db.Certification, {foreignKey: "traineePhoneNumber", sourceKey: "traineePhoneNumber"});
   }
 };
