@@ -1,7 +1,7 @@
 const { createResponse } = require('../../../../utils/response');
 const { Certification } = require('../../../../models');
 const { makeAuthNumber, makeMessage } = require('../../../../utils/sms');
-const { EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS } = require('../../../../errors');
+const { EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS, AUTH_NUMBER_EXPIRED, CERTIFICATION_NOT_EXISTED, INVALID_AUTH_NUMBER } = require('../../../../errors');
 const { default: axios } = require('axios');
 
 const verifyCertification = async(req,res,next) => {
@@ -57,4 +57,34 @@ const sendMessage = async(req,res,next) => {
   }
 };
 
-module.exports = { verifyCertification, sendMessage };
+const compareAuthNumber = async(req,res,next) => {
+  let {params: {phone}, query: {key}} = req;
+  try {
+    let certification;
+    const date = new Date().getTime();
+
+    if(phone[0]=='0') { //트레이너는 '0'+'phone', 트레이니는 '1'+'phone'으로 구분한다. 
+      phone = phone.slice(1);
+      certification = await Certification.findOne({where: {trainerPhoneNumber: phone}});
+    } else if(phone[0]=='1') {
+      phone = phone.slice(1);
+      certification = await Certification.findOne({where: {traineePhoneNumber: phone}});
+    }
+
+    if(!certification) next(CERTIFICATION_NOT_EXISTED);
+    if((date - certification.lastRequest)/1000 > 60) return next(AUTH_NUMBER_EXPIRED); //60초라는 인증 시간이 경과한 경우
+    if(certification.authAttempts >= 5) return next(EXCEEDED_AUTH_ATTEMPTS); //인증 시도를 5번 이상 하는 경우
+    if(certification.authNumber != key) { //authNumber 값이 일치하지 않는 경우
+      await certification.increment('authAttempts', {by:1});
+      return next(INVALID_AUTH_NUMBER);
+    }
+
+    await certification.destroy();  //인증 정보 없애주기
+    return res.json(createResponse(res));                 
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+module.exports = { verifyCertification, sendMessage, compareAuthNumber };
