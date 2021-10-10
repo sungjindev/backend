@@ -4,7 +4,7 @@ const {SMS_SERVICE_ID, SMS_ACCESS_KEY, SMS_SECRET_KEY, PIPI_PHONE} = require('..
 const makeSignature = () => {
   const date = Date.now().toString();
   const url = `/sms/v2/services/${SMS_SERVICE_ID}/messages`;
-  const  hmac = crypto.createHmac('sha256', SMS_SECRET_KEY);
+  const hmac = crypto.createHmac('sha256', SMS_SECRET_KEY);
   let data = new Array;
   data.push("POST");
   data.push(" ");
@@ -24,7 +24,7 @@ const makeAuthNumber = () => {
 
 const makeMessage = (phone, authNumber) => {
   const signature = makeSignature();
-  const date = Date.now().toString;
+  const date = Date.now().toString();
   const form = {
     url: `https://sens.apigw.ntruss.com/sms/v2/services/${SMS_SERVICE_ID}/messages`,
     headers: {
@@ -37,7 +37,7 @@ const makeMessage = (phone, authNumber) => {
 			'type' : 'SMS',
 			'countryCode' : '82',
 			'from' : `${PIPI_PHONE.toString()}`,
-			'content' : `[피티피플] 인증번호 ${authNumber.toString()} 입니다.`,
+			'content' : `[피티피플] 인증번호 ${authNumber} 입니다.`,
 			'messages' : [
 				{
 					'to' : `${phone}`
