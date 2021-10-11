@@ -18,7 +18,6 @@ const verifyCertification = async(req,res,next) => {
     }
     if(!certification[1]) { //기존에 certification이 존재했다면
       const elapsedTime = (date.getTime()-certification[0].lastRequest.getTime()) / 1000; //경과시간을 초단위로 표현한 것
-      await certification[0].update({authNumber, lastRequest: date});
       if(elapsedTime < 86400 && certification[0].smsAttempts >= 5)
         return next(EXCEEDED_SMS_ATTEMPTS);
       if(elapsedTime >= 86400) {  //하루가 지났다면
@@ -26,6 +25,7 @@ const verifyCertification = async(req,res,next) => {
       }
       else {  //하루가 지나지 않았지만 sms 시도 횟수는 5회 미만이라면,
         await certification[0].increment('smsAttempts', {by: 1});
+        await certification[0].update({authNumber, lastRequest: date});
       }
     }
     next();
