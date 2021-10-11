@@ -14,7 +14,7 @@ const makeSignature = () => {
   data.push("\n");
   data.push(SMS_ACCESS_KEY);
   const signature = hmac.update(data.join('')).digest('base64');
-  return signature;
+  return {signature, date};
 };
 
 const makeAuthNumber = () => {
@@ -23,8 +23,8 @@ const makeAuthNumber = () => {
 };
 
 const makeMessage = (phone, authNumber) => {
-  const signature = makeSignature();
-  const date = Date.now().toString();
+  const {signature, date} = makeSignature();
+  // const date = Date.now().toString();
   const form = {
     url: `https://sens.apigw.ntruss.com/sms/v2/services/${SMS_SERVICE_ID}/messages`,
     headers: {
