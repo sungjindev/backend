@@ -5,20 +5,17 @@ const { EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS, AUTH_NUMBER_EXPIRED, CERT
 const { default: axios } = require('axios');
 
 const verifyCertification = async(req,res,next) => {
-  let {params: {phone}} = req;
+  const {body: {phone, isTrainer}} = req;
   try {
     const authNumber = makeAuthNumber();
     res.locals.authNumber = authNumber;
     const date = new Date();
     let certification;
-    if(phone[0]=='0') { //트레이너는 '0'+'phone', 트레이니는 '1'+'phone'으로 구분한다. 
-      phone = phone.slice(1);
+    if(isTrainer) { //트레이너는 isTrainer 값이 True, 트레이니는 isTrainer 값이 False 
       certification = await Certification.findOrCreate({where: {trainerPhoneNumber: phone}, defaults: {trainerPhoneNumber: phone, lastRequest: date, authNumber}});
-    } else if(phone[0]=='1') {
-      phone = phone.slice(1);
+    } else {
       certification = await Certification.findOrCreate({where: {traineePhoneNumber: phone}, defaults: {traineePhoneNumber: phone, lastRequest: date, authNumber}});
     }
-    res.locals.phone = phone;
     if(!certification[1]) { //기존에 certification이 존재했다면
       const elapsedTime = (date.getTime()-certification[0].lastRequest.getTime()) / 1000; //경과시간을 초단위로 표현한 것
       await certification[0].update({authNumber, lastRequest: date});
@@ -39,8 +36,8 @@ const verifyCertification = async(req,res,next) => {
 };
 
 const sendMessage = async(req,res,next) => {
+  const {body: {phone}} = req;
   try {
-    const phone = res.locals.phone.toString();
     const authNumber = res.locals.authNumber;
     const form = makeMessage(phone, authNumber);
     await axios({
@@ -58,16 +55,14 @@ const sendMessage = async(req,res,next) => {
 };
 
 const compareAuthNumber = async(req,res,next) => {
-  let {params: {phone}, query: {key}} = req;
+  const {body: {phone, isTrainer, key}} = req;
   try {
     let certification;
     const date = new Date().getTime();
 
-    if(phone[0]=='0') { //트레이너는 '0'+'phone', 트레이니는 '1'+'phone'으로 구분한다. 
-      phone = phone.slice(1);
+    if(isTrainer) { //트레이너는 isTrainer 값이 True, 트레이니는 isTrainer 값이 False 
       certification = await Certification.findOne({where: {trainerPhoneNumber: phone}});
-    } else if(phone[0]=='1') {
-      phone = phone.slice(1);
+    } else {
       certification = await Certification.findOne({where: {traineePhoneNumber: phone}});
     }
 
