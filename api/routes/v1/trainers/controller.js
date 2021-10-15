@@ -1,6 +1,6 @@
 const { Trainer, RefreshToken } = require('../../../../models');
 const { createResponse } = require('../../../../utils/response');
-const { INVALID_TRAINER_PHONE, INVALID_TRAINER_PASSWORD, ALREADY_LOGGED_OUT, SAME_PASSWORD } = require('../../../../errors');
+const { INVALID_TRAINER_PHONE, INVALID_TRAINER_PASSWORD, ALREADY_LOGGED_OUT, DUPLICATED_PHONE, DUPLICATED_PASSWORD, INVALID_FORMAT_PHONE, INVALID_PHONE_LENGTH, INVALID_FORMAT_PASSWORD } = require('../../../../errors');
 const { SALT_ROUNDS, JWT_SECRET_KEY_FILE } = require('../../../../env');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
@@ -8,8 +8,18 @@ const jwt = require('jsonwebtoken');
 const { join } = require('path');
 
 const register = async(req,res,next) => {
+  const {body: {trainerPhoneNumber, trainerPassword}} = req;
   try {
-    req.body.trainerPassword = bcrypt.hashSync(req.body.trainerPassword, parseInt(SALT_ROUNDS));
+    if(trainerPhoneNumber.search(/^010/) == -1) //휴대폰 번호가 010으로 시작하는지 검사
+      return next(INVALID_FORMAT_PHONE);
+    if(trainerPhoneNumber.search(/^\d{11}$/))  //휴대폰 번호가 숫자 11자리인지 검사
+      return next(INVALID_PHONE_LENGTH);
+    const duplicateTest = await Trainer.findByPk(trainerPhoneNumber);
+    if(duplicateTest) //기존에 동일한 휴대폰 번호의 회원이 있는지 검사
+      return next(DUPLICATED_PHONE);
+    if(trainerPassword.search(/^[A-Za-z0-9]{6,12}$/) == -1) //비밀번호가 대소문자 알파벳,숫자 6~12자로 이루어져 있는지 검사 
+      return next(INVALID_FORMAT_PASSWORD);
+    req.body.trainerPassword = bcrypt.hashSync(trainerPassword, parseInt(SALT_ROUNDS));
     const trainer = await Trainer.create(req.body);
     return res.json(createResponse(res, trainer));
   } catch (error) {
@@ -71,7 +81,9 @@ const resetPassword = async(req,res,next) => {
     if(!trainer) return next(INVALID_TRAINER_PHONE);
     const same = bcrypt.compareSync(trainerPassword, trainer.trainerPassword);
     if(same)  //기존의 비밀번호와 동일한 비밀번호는 아닌지 검사
-      return next(SAME_PASSWORD);
+      return next(DUPLICATED_PASSWORD);
+    if(trainerPassword.search(/^[A-Za-z0-9]{6,12}$/) == -1) //비밀번호가 대소문자 알파벳,숫자 6~12자로 이루어져 있는지 검사 
+      return next(INVALID_FORMAT_PASSWORD);
     const newTrainerPassword = bcrypt.hashSync(trainerPassword, parseInt(SALT_ROUNDS));
     await trainer.update({trainerPassword: newTrainerPassword});
     await RefreshToken.destroy({where: {trainerPhoneNumber}});  //db에서 trainer와 연결된 refreshToken 제거
