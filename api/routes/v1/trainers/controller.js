@@ -82,6 +82,8 @@ const resetPassword = async(req,res,next) => {
     const same = bcrypt.compareSync(trainerPassword, trainer.trainerPassword);
     if(same)  //기존의 비밀번호와 동일한 비밀번호는 아닌지 검사
       return next(DUPLICATED_PASSWORD);
+    if(trainerPassword.search(/^[A-Za-z0-9]{6,12}$/) == -1) //비밀번호가 대소문자 알파벳,숫자 6~12자로 이루어져 있는지 검사 
+      return next(INVALID_FORMAT_PASSWORD);
     const newTrainerPassword = bcrypt.hashSync(trainerPassword, parseInt(SALT_ROUNDS));
     await trainer.update({trainerPassword: newTrainerPassword});
     await RefreshToken.destroy({where: {trainerPhoneNumber}});  //db에서 trainer와 연결된 refreshToken 제거
