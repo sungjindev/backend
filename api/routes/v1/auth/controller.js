@@ -1,12 +1,16 @@
 const { createResponse } = require('../../../../utils/response');
 const { Certification } = require('../../../../models');
 const { makeAuthNumber, makeMessage } = require('../../../../utils/sms');
-const { EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS, AUTH_NUMBER_EXPIRED, CERTIFICATION_NOT_EXISTED, INVALID_AUTH_NUMBER } = require('../../../../errors');
+const { EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS, AUTH_NUMBER_EXPIRED, CERTIFICATION_NOT_EXISTED, INVALID_AUTH_NUMBER, INVALID_FORMAT_PHONE, INVALID_PHONE_LENGTH} = require('../../../../errors');
 const { default: axios } = require('axios');
 
 const verifyCertification = async(req,res,next) => {
   const {body: {phone, isTrainer}} = req;
   try {
+    if(phone.search(/^010/) == -1) //휴대폰 번호가 010으로 시작하는지 검사
+      return next(INVALID_FORMAT_PHONE);
+    if(phone.search(/^\d{11}$/))  //휴대폰 번호가 숫자 11자리인지 검사
+      return next(INVALID_PHONE_LENGTH);
     const authNumber = makeAuthNumber();
     res.locals.authNumber = authNumber;
     const date = new Date();
@@ -57,6 +61,11 @@ const sendMessage = async(req,res,next) => {
 const compareAuthNumber = async(req,res,next) => {
   const {body: {phone, isTrainer, key}} = req;
   try {
+    if(phone.search(/^010/) == -1) //휴대폰 번호가 010으로 시작하는지 검사
+      return next(INVALID_FORMAT_PHONE);
+    if(phone.search(/^\d{11}$/))  //휴대폰 번호가 숫자 11자리인지 검사
+      return next(INVALID_PHONE_LENGTH);
+
     let certification;
     const date = new Date().getTime();
 
