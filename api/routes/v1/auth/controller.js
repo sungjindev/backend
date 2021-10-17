@@ -22,7 +22,7 @@ const verifyCertification = async(req,res,next) => {
     }
     if(!certification[1]) { //기존에 certification이 존재했다면
       const elapsedTime = (date.getTime()-certification[0].lastRequest.getTime()) / 1000; //경과시간을 초단위로 표현한 것
-      if(elapsedTime < 86400 && certification[0].smsAttempts >= 5)
+      if(elapsedTime < 86400 && certification[0].smsAttempts >= 500)
         return next(EXCEEDED_SMS_ATTEMPTS);
       if(elapsedTime >= 86400) {  //하루가 지났다면
         await certification[0].update({authNumber, smsAttempts: 1, authAttempts: 0, lastRequest: date});
@@ -77,7 +77,7 @@ const compareAuthNumber = async(req,res,next) => {
 
     if(!certification) next(CERTIFICATION_NOT_EXISTED);
     if((date - certification.lastRequest)/1000 > 60) return next(AUTH_NUMBER_EXPIRED); //60초라는 인증 시간이 경과한 경우
-    if(certification.authAttempts >= 5) return next(EXCEEDED_AUTH_ATTEMPTS); //인증 시도를 5번 이상 하는 경우
+    if(certification.authAttempts >= 500) return next(EXCEEDED_AUTH_ATTEMPTS); //인증 시도를 5번 이상 하는 경우
     if(certification.authNumber != key) { //authNumber 값이 일치하지 않는 경우
       await certification.increment('authAttempts', {by:1});
       return next(INVALID_AUTH_NUMBER);
