@@ -9,10 +9,6 @@ module.exports = class Request extends Sequelize.Model {
         },
         requestee: {
           type: Sequelize.STRING(20)
-        },
-        requestorIsTrainer: {
-          type: Sequelize.BOOLEAN,
-          allowNull: false
         }
       },
       {
