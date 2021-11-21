@@ -1,6 +1,6 @@
 const { createResponse } = require('../../../../utils/response');
 const { Request, Trainer, Trainee } = require('../../../../models');
-const { INVALID_TRAINER_PHONE, INVALID_TRAINEE_PHONE, DUPLICATED_REQUEST } = require('../../../../errors');
+const { INVALID_TRAINER_PHONE, INVALID_TRAINEE_PHONE, DUPLICATED_REQUEST, REQUEST_NOT_FOUND } = require('../../../../errors');
 
 const request = async(req,res,next) => {
   const {body: {requestor, requestee}} = req;
@@ -28,11 +28,24 @@ const request = async(req,res,next) => {
 const accept = async(req,res,next) => {
   const {body: {requestor, requestee}} = req;
   try {
+    const trainer = await Trainer.findByPk(requestee);
+    const trainee = await Trainee.findByPk(requestor);
+    if(!trainer)
+      return next(INVALID_TRAINER_PHONE);
+    if(!trainee)
+      return next(INVALID_TRAINEE_PHONE);
     
+    const request = await Request.findOne({where: {requestor, requestee}});
+    if(!request)
+      return next(REQUEST_NOT_FOUND);
+
+    await trainer.addTrainee(trainee);
+    await request.destroy();
+    return res.json(createResponse(res));
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
 
-module.exports = { request };
+module.exports = { request, accept };

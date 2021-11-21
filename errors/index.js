@@ -27,6 +27,7 @@ const errors = {
     // 404 Errors
     TRAINER_NOT_FOUND: [404, '찾을 수 없는 트레이너입니다.'],
     TRAINEE_NOT_FOUND: [404, '찾을 수 없는 트레이니입니다.'],
+    REQUEST_NOT_FOUND: [404, '관련된 친구 요청이 없습니다.'],
     DUPLICATED_PHONE: [404, '중복된 휴대폰 번호입니다.'],
     DUPLICATED_PASSWORD: [404, '기존과 동일한 패스워드입니다.'],
     DUPLICATED_REQUEST: [404, '중복된 친구 요청입니다.'],
