@@ -70,4 +70,27 @@ const reject = async(req,res,next) => {
   }
 };
 
-module.exports = { request, accept, reject };
+const getRequests = async(req,res,next) => {
+  const {body: {trainerPhoneNumber}} = req;
+  try {
+    let trainees = [];
+    const trainer = await Trainer.findByPk(trainerPhoneNumber);
+    if(!trainer)
+      return next(INVALID_TRAINER_PHONE);
+
+    const requests = await Request.findAll({where: {requestee: trainerPhoneNumber}});
+    if(requests.length == 0)
+      return next(REQUEST_NOT_FOUND);
+    for(const request of requests) {
+      const trainee = await Trainee.findByPk(request.requestor);
+      trainees.push({traineePhoneNumber: trainee.traineePhoneNumber, traineeName: trainee.traineeName});
+    } 
+
+    return res.json(createResponse(res, trainees));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+module.exports = { request, accept, reject, getRequests };
