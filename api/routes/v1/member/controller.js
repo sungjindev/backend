@@ -16,7 +16,7 @@ const getMembers = async(req,res,next) => {
 
     for(const trainee of trainees) {
       const member = await Trainee.findByPk(trainee.trainerPhoneNumber);
-      members.push({traineePhoneNumber: trainee.traineePhoneNumber, traineeName: trainee.traineeName});
+      members.push({traineePhoneNumber: trainee.traineePhoneNumber, traineeName: trainee.traineeName, expired: trainee.expired});
     }
     
     return res.json(createResponse(res, members));
@@ -49,4 +49,18 @@ const deleteMember = async(req,res,next) => {
   }
 };
 
-module.exports = { getMembers, deleteMember };
+const putExpired = async(req,res,next) => {
+  const {body: {traineePhoneNumber, expired}} = req;
+  try {
+    const trainee = await Trainee.findByPk(traineePhoneNumber);
+    if(!trainee)
+      return next(INVALID_TRAINEE_PHONE);
+    await trainee.update({expired});
+    return res.json(createResponse(res, trainee));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+module.exports = { getMembers, deleteMember, putExpired };
