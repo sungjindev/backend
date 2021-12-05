@@ -17,6 +17,10 @@ module.exports = class Trainee extends Sequelize.Model {
           type: Sequelize.STRING(20),
           allowNull: false,
         },
+        expired: {
+          type: Sequelize.BOOLEAN,
+          defaultValue: false,
+        }
       },
       {
         sequelize,
