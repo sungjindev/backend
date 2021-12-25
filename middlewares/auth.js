@@ -10,9 +10,9 @@ const checkTokens = async(req,res,next) => {
   // const JWT_SECRET_KEY = fs.readFileSync(join(__dirname, '../keys/', JWT_SECRET_KEY_FILE));
   const {query: {autoLogin}} = req;
   try {
-    if(req.cookies.accessToken == undefined) next(LOGIN_REQUIRED);
-    const accessToken = verifyToken(req.cookies.accessToken); 
-    const refreshToken = verifyToken(req.cookies.refreshToken);
+    if(req.headers.authorization.split('Bearer ')[1] == undefined) return next(LOGIN_REQUIRED);
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    const refreshToken = verifyToken(req.headers.refresh);
 
     if(!autoLogin) {
       if(!accessToken)  //자동로그인 기능이 꺼져있고 accessToken이 유효하지 않은 경우

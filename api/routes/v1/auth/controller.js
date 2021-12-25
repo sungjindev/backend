@@ -3,22 +3,39 @@ const { Certification } = require('../../../../models');
 const { makeAuthNumber, makeMessage } = require('../../../../utils/sms');
 const { EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS, AUTH_NUMBER_EXPIRED, CERTIFICATION_NOT_EXISTED, INVALID_AUTH_NUMBER, INVALID_FORMAT_PHONE, INVALID_PHONE_LENGTH} = require('../../../../errors');
 const { default: axios } = require('axios');
+const { Trainer, Trainee } = require('../../../../models');
 
 const verifyCertification = async(req,res,next) => {
-  const {body: {phone, isTrainer}} = req;
   try {
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    var isTrainer, phone, trainer, trainee;
+    if(accessToken.trainerId)
+      isTrainer = true;
+    else if(accessToken.traineeId)
+      isTrainer = false;
+
+    if(isTrainer) {
+      trainer = await Trainer.findByPk({where: {id: accessToken.trainerId}});
+      phone = trainer.trainerPhoneNumber;
+    }
+    else {
+      trainee = await Trainee.findByPk({where: {id: accessToken.traineeId}});
+      phone = trainee.traineePhoneNumber;
+    }
+
     if(phone.search(/^010/) == -1) //휴대폰 번호가 010으로 시작하는지 검사
       return next(INVALID_FORMAT_PHONE);
     if(phone.search(/^\d{11}$/))  //휴대폰 번호가 숫자 11자리인지 검사
       return next(INVALID_PHONE_LENGTH);
     const authNumber = makeAuthNumber();
     res.locals.authNumber = authNumber;
+    res.locals.phone = phone;
     const date = new Date();
     let certification;
     if(isTrainer) { //트레이너는 isTrainer 값이 True, 트레이니는 isTrainer 값이 False 
-      certification = await Certification.findOrCreate({where: {trainerPhoneNumber: phone}, defaults: {trainerPhoneNumber: phone, lastRequest: date, authNumber}});
+      certification = await Certification.findOrCreate({where: {trainerId: accessToken.trainerId}, defaults: {trainerId: accessToken.trainerId, lastRequest: date, authNumber}});
     } else {
-      certification = await Certification.findOrCreate({where: {traineePhoneNumber: phone}, defaults: {traineePhoneNumber: phone, lastRequest: date, authNumber}});
+      certification = await Certification.findOrCreate({where: {traineeId: accessToken.traineeId}, defaults: {traineeId: accessToken.traineeId, lastRequest: date, authNumber}});
     }
     if(!certification[1]) { //기존에 certification이 존재했다면
       const elapsedTime = (date.getTime()-certification[0].lastRequest.getTime()) / 1000; //경과시간을 초단위로 표현한 것
@@ -40,8 +57,8 @@ const verifyCertification = async(req,res,next) => {
 };
 
 const sendMessage = async(req,res,next) => {
-  const {body: {phone}} = req;
   try {
+    const phone = res.locals.phone;
     const authNumber = res.locals.authNumber;
     const form = makeMessage(phone, authNumber);
     await axios({
@@ -59,8 +76,24 @@ const sendMessage = async(req,res,next) => {
 };
 
 const compareAuthNumber = async(req,res,next) => {
-  const {body: {phone, isTrainer, key}} = req;
+  const {body: {key}} = req;
   try {
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    var isTrainer, phone, trainer, trainee;
+    if(accessToken.trainerId)
+      isTrainer = true;
+    else if(accessToken.traineeId)
+      isTrainer = false;
+
+    if(isTrainer) {
+      trainer = await Trainer.findByPk({where: {id: accessToken.trainerId}});
+      phone = trainer.trainerPhoneNumber;
+    }
+    else {
+      trainee = await Trainee.findByPk({where: {id: accessToken.traineeId}});
+      phone = trainee.traineePhoneNumber;
+    }
+
     if(phone.search(/^010/) == -1) //휴대폰 번호가 010으로 시작하는지 검사
       return next(INVALID_FORMAT_PHONE);
     if(phone.search(/^\d{11}$/))  //휴대폰 번호가 숫자 11자리인지 검사
@@ -70,9 +103,9 @@ const compareAuthNumber = async(req,res,next) => {
     const date = new Date().getTime();
 
     if(isTrainer) { //트레이너는 isTrainer 값이 True, 트레이니는 isTrainer 값이 False 
-      certification = await Certification.findOne({where: {trainerPhoneNumber: phone}});
+      certification = await Certification.findOne({where: {trainerId: accessToken.trainerId}});
     } else {
-      certification = await Certification.findOne({where: {traineePhoneNumber: phone}});
+      certification = await Certification.findOne({where: {traineeId: accessToken.traineeId}});
     }
 
     if(!certification) next(CERTIFICATION_NOT_EXISTED);
