@@ -23,7 +23,7 @@ module.exports = class RefreshToken extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.RefreshToken.belongsTo(db.Trainer, {foreignKey: "trainerPhoneNumber", targetKey: "trainerPhoneNumber"});
-    db.RefreshToken.belongsTo(db.Trainee, {foreignKey: "traineePhoneNumber", targetKey: "traineePhoneNumber"});
+    db.RefreshToken.belongsTo(db.Trainer, {foreignKey: "trainerId", targetKey: "id"});
+    db.RefreshToken.belongsTo(db.Trainee, {foreignKey: "traineeId", targetKey: "id"});
   }
 };

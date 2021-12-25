@@ -7,7 +7,6 @@ module.exports = class Trainer extends Sequelize.Model {
         trainerPhoneNumber: {
           type: Sequelize.STRING(20),
           allowNull: false,
-          primaryKey: true,
         },
         trainerPassword: {
           type: Sequelize.STRING(100),
@@ -32,7 +31,7 @@ module.exports = class Trainer extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Trainer.hasMany(db.Trainee, {foreignKey: "trainerPhoneNumber", sourceKey: "trainerPhoneNumber"});
-    db.Trainer.hasOne(db.RefreshToken, {foreignKey: "trainerPhoneNumber", sourceKey: "trainerPhoneNumber"});
+    db.Trainer.hasMany(db.Trainee, {foreignKey: "trainerId", sourceKey: "id"});
+    db.Trainer.hasOne(db.RefreshToken, {foreignKey: "trainerId", sourceKey: "id"});
   }
 };

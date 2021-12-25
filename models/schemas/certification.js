@@ -4,10 +4,10 @@ module.exports = class Certification extends Sequelize.Model {
   static init(sequelize) {
     return super.init (
       {
-        trainerPhoneNumber: {
+        trainerId: {
           type: Sequelize.STRING(20)
         },
-        traineePhoneNumber: {
+        traineeId: {
           type: Sequelize.STRING(20)
         },
         authNumber: {
