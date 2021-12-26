@@ -15,6 +15,8 @@ const errors = {
     INVALID_FORMAT_PHONE: [400, '올바르지 않은 형식의 휴대폰 번호입니다.'],
     INVALID_PHONE_LENGTH: [400, '휴대폰 번호의 길이가 올바르지 않습니다.'],
     INVALID_FORMAT_PASSWORD: [400, '올바르지 않은 형식의 비밀번호입니다.'],
+    INVALID_REQUEST: [400, '멤버 등록 요청은 트레이니만 할 수 있습니다.'],
+    INVALID_ACCEPT: [400, '멤버 요청 승낙, 거절 및 조회는 트레이너만 할 수 있습니다.'],
     TOKEN_EXPIRED : [400, '만료된 Token입니다.'],
     ALREADY_LOGGED_OUT : [400, '이미 로그아웃된 사용자입니다.'],
   

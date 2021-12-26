@@ -12,7 +12,7 @@ const getMembers = async(req,res,next) => {
     if(!accessToken.trainerId)
       return next(INVALID_TRAINER_PHONE);
 
-    const trainer = await Trainer.findByPk({where: {id: accessToken.trainerId}});
+    const trainer = await Trainer.findByPk(accessToken.trainerId);
     let members = [];
 
     if(!trainer)
@@ -48,7 +48,7 @@ const deleteMember = async(req,res,next) => {
       isTrainer = false;
 
     if(isTrainer) {
-      trainer = await Trainer.findByPk({where: {id: accessToken.trainerId}});
+      trainer = await Trainer.findByPk(accessToken.trainerId);
       if(!trainer)
         return next(INVALID_TRAINER_PHONE);
       trainee = await Trainee.findOne({where: {traineePhoneNumber: deletingPhoneNumber}});
@@ -62,7 +62,7 @@ const deleteMember = async(req,res,next) => {
       await trainer.removeTrainee(trainee);
     }
     else {
-      trainee = await Trainee.findByPk({where: {id: accessToken.traineeId}});
+      trainee = await Trainee.findByPk(accessToken.traineeId);
       if(!trainee)
         return next(INVALID_TRAINEE_PHONE);
       
@@ -107,7 +107,7 @@ const putExpired = async(req,res,next) => {
     if(accessToken.trainerId)
       return next(INVALID_TRAINEE_PHONE);
 
-    trainee = await Trainee.findByPk({where: {id: accessToken.traineeId}});
+    trainee = await Trainee.findByPk(accessToken.traineeId);
   
     // const trainee = await Trainee.findByPk(traineePhoneNumber);
     if(!trainee)

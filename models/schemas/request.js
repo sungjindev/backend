@@ -4,10 +4,10 @@ module.exports = class Request extends Sequelize.Model {
   static init(sequelize) {
     return super.init (
       {
-        requestor: {
+        traineeId: {
           type: Sequelize.STRING(20)
         },
-        requestee: {
+        trainerId: {
           type: Sequelize.STRING(20)
         }
       },

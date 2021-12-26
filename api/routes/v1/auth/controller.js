@@ -1,7 +1,7 @@
 const { createResponse } = require('../../../../utils/response');
 const { Certification } = require('../../../../models');
 const { makeAuthNumber, makeMessage } = require('../../../../utils/sms');
-const { JSON_WEB_TOKEN_ERROR, EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS, AUTH_NUMBER_EXPIRED, CERTIFICATION_NOT_EXISTED, INVALID_AUTH_NUMBER, INVALID_FORMAT_PHONE, INVALID_PHONE_LENGTH} = require('../../../../errors');
+const { JSON_WEB_TOKEN_ERROR, EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS, AUTH_NUMBER_EXPIRED, CERTIFICATION_NOT_EXISTED, INVALID_AUTH_NUMBER, INVALID_FORMAT_PHONE, INVALID_PHONE_LENGTH, INVALID_TRAINER_PHONE, INVALID_TRAINEE_PHONE} = require('../../../../errors');
 const { default: axios } = require('axios');
 const { Trainer, Trainee } = require('../../../../models');
 const { verifyToken } = require('../../../../utils/jwt');
@@ -19,10 +19,14 @@ const verifyCertification = async(req,res,next) => {
 
     if(isTrainer) {
       trainer = await Trainer.findByPk({where: {id: accessToken.trainerId}});
+      if(!trainer)
+        return next(INVALID_TRAINER_PHONE);
       phone = trainer.trainerPhoneNumber;
     }
     else {
       trainee = await Trainee.findByPk({where: {id: accessToken.traineeId}});
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
       phone = trainee.traineePhoneNumber;
     }
 
@@ -92,10 +96,14 @@ const compareAuthNumber = async(req,res,next) => {
 
     if(isTrainer) {
       trainer = await Trainer.findByPk({where: {id: accessToken.trainerId}});
+      if(!trainer)
+        return next(INVALID_TRAINER_PHONE);
       phone = trainer.trainerPhoneNumber;
     }
     else {
       trainee = await Trainee.findByPk({where: {id: accessToken.traineeId}});
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
       phone = trainee.traineePhoneNumber;
     }
 
