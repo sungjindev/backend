@@ -18,13 +18,13 @@ const verifyCertification = async(req,res,next) => {
       isTrainer = false;
 
     if(isTrainer) {
-      trainer = await Trainer.findByPk({where: {id: accessToken.trainerId}});
+      trainer = await Trainer.findByPk(accessToken.trainerId);
       if(!trainer)
         return next(INVALID_TRAINER_PHONE);
       phone = trainer.trainerPhoneNumber;
     }
     else {
-      trainee = await Trainee.findByPk({where: {id: accessToken.traineeId}});
+      trainee = await Trainee.findByPk(accessToken.traineeId);
       if(!trainee)
         return next(INVALID_TRAINEE_PHONE);
       phone = trainee.traineePhoneNumber;
@@ -95,13 +95,13 @@ const compareAuthNumber = async(req,res,next) => {
       isTrainer = false;
 
     if(isTrainer) {
-      trainer = await Trainer.findByPk({where: {id: accessToken.trainerId}});
+      trainer = await Trainer.findByPk(accessToken.trainerId);
       if(!trainer)
         return next(INVALID_TRAINER_PHONE);
       phone = trainer.trainerPhoneNumber;
     }
     else {
-      trainee = await Trainee.findByPk({where: {id: accessToken.traineeId}});
+      trainee = await Trainee.findByPk(accessToken.traineeId);
       if(!trainee)
         return next(INVALID_TRAINEE_PHONE);
       phone = trainee.traineePhoneNumber;
