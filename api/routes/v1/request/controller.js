@@ -1,23 +1,39 @@
 const { createResponse } = require('../../../../utils/response');
 const { Request, Trainer, Trainee } = require('../../../../models');
-const { INVALID_TRAINER_PHONE, INVALID_TRAINEE_PHONE, DUPLICATED_REQUEST, REQUEST_NOT_FOUND } = require('../../../../errors');
+const { JSON_WEB_TOKEN_ERROR, INVALID_TRAINER_PHONE, INVALID_TRAINEE_PHONE, INVALID_REQUEST, INVALID_ACCEPT, DUPLICATED_REQUEST, REQUEST_NOT_FOUND } = require('../../../../errors');
+const { verifyToken } = require('../../../../utils/jwt');
 
 const request = async(req,res,next) => {
-  const {body: {requestor, requestee}} = req;
+  const {body: {trainerPhoneNumber}} = req;
   try {
-    const trainer = await Trainer.findByPk(requestee);
-    const trainee = await Trainee.findByPk(requestor);
-    if(!trainer)
-      return next(INVALID_TRAINER_PHONE);
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+    var trainer, trainee;
+    if(accessToken.trainerId)
+      return next(INVALID_REQUEST);
+
+    trainee = await Trainee.findByPk(accessToken.traineeId);
     if(!trainee)
       return next(INVALID_TRAINEE_PHONE);
     
-    const duplicated = await Request.findOne({where: {requestor, requestee}});
+    trainer = await Trainer.findOne({where: {trainerPhoneNumber}});
+    if(!trainer)
+      return next(INVALID_TRAINER_PHONE);
+
+    // const trainer = await Trainer.findByPk(requestee);
+    // const trainee = await Trainee.findByPk(requestor);
+    // if(!trainer)
+    //   return next(INVALID_TRAINER_PHONE);
+    // if(!trainee)
+    //   return next(INVALID_TRAINEE_PHONE);
+    
+    const duplicated = await Request.findOne({where: {traineeId: trainee.id, trainerId: trainer.id}});
   
     if(duplicated)
       return next(DUPLICATED_REQUEST);
 
-    const request = await Request.create(req.body);
+    const request = await Request.create({traineeId: trainee.id, trainerId: trainer.id});
     return res.json(createResponse(res, request));
   } catch (error) {
     console.error(error);
@@ -26,16 +42,32 @@ const request = async(req,res,next) => {
 };
 
 const accept = async(req,res,next) => {
-  const {body: {requestor, requestee}} = req;
+  const {body: {traineePhoneNumber}} = req;
   try {
-    const trainer = await Trainer.findByPk(requestee);
-    const trainee = await Trainee.findByPk(requestor);
-    if(!trainer)
-      return next(INVALID_TRAINER_PHONE);
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+    var trainer, trainee;
+    if(accessToken.traineeId)
+      return next(INVALID_ACCEPT);
+
+    trainee = await Trainee.findOne({where: {traineePhoneNumber}});
     if(!trainee)
       return next(INVALID_TRAINEE_PHONE);
     
-    const request = await Request.findOne({where: {requestor, requestee}});
+    trainer = await Trainer.findByPk(accessToken.trainerId);
+    if(!trainer)
+      return next(INVALID_TRAINER_PHONE);
+
+
+    // const trainer = await Trainer.findByPk(requestee);
+    // const trainee = await Trainee.findByPk(requestor);
+    // if(!trainer)
+    //   return next(INVALID_TRAINER_PHONE);
+    // if(!trainee)
+    //   return next(INVALID_TRAINEE_PHONE);
+    
+    const request = await Request.findOne({where: {traineeId: trainee.id, trainerId: trainer.id}});
     if(!request)
       return next(REQUEST_NOT_FOUND);
 
@@ -49,16 +81,32 @@ const accept = async(req,res,next) => {
 };
 
 const reject = async(req,res,next) => {
-  const {body: {requestor, requestee}} = req;
+  const {body: {traineePhoneNumber}} = req;
   try {
-    const trainer = await Trainer.findByPk(requestee);
-    const trainee = await Trainee.findByPk(requestor);
-    if(!trainer)
-      return next(INVALID_TRAINER_PHONE);
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+    var trainer, trainee;
+    if(accessToken.traineeId)
+      return next(INVALID_ACCEPT);
+
+    trainee = await Trainee.findOne({where: {traineePhoneNumber}});
     if(!trainee)
       return next(INVALID_TRAINEE_PHONE);
+    
+    trainer = await Trainer.findByPk(accessToken.trainerId);
+    if(!trainer)
+      return next(INVALID_TRAINER_PHONE);
 
-    const request = await Request.findOne({where: {requestor, requestee}});
+
+    // const trainer = await Trainer.findByPk(requestee);
+    // const trainee = await Trainee.findByPk(requestor);
+    // if(!trainer)
+    //   return next(INVALID_TRAINER_PHONE);
+    // if(!trainee)
+    //   return next(INVALID_TRAINEE_PHONE);
+
+    const request = await Request.findOne({where: {traineeId: trainee.id, trainerId: trainer.id}});
     if(!request)
       return next(REQUEST_NOT_FOUND);
 
@@ -71,18 +119,28 @@ const reject = async(req,res,next) => {
 };
 
 const getRequests = async(req,res,next) => {
-  const {body: {trainerPhoneNumber}} = req;
   try {
-    let trainees = [];
-    const trainer = await Trainer.findByPk(trainerPhoneNumber);
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+    var trainer;
+    if(accessToken.traineeId)
+      return next(INVALID_ACCEPT);
+
+    trainer = await Trainer.findByPk(accessToken.trainerId);
     if(!trainer)
       return next(INVALID_TRAINER_PHONE);
 
-    const requests = await Request.findAll({where: {requestee: trainerPhoneNumber}});
+    let trainees = [];
+    // const trainer = await Trainer.findByPk(trainerPhoneNumber);
+    // if(!trainer)
+    //   return next(INVALID_TRAINER_PHONE);
+
+    const requests = await Request.findAll({where: {trainerId: trainer.id}});
     if(requests.length == 0)
       return next(REQUEST_NOT_FOUND);
     for(const request of requests) {
-      const trainee = await Trainee.findByPk(request.requestor);
+      const trainee = await Trainee.findByPk(request.traineeId);
       trainees.push({traineePhoneNumber: trainee.traineePhoneNumber, traineeName: trainee.traineeName});
     } 
 

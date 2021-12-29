@@ -1,10 +1,11 @@
 const { Router } = require('express');
 const router = Router();
 const controller = require('./controller');
+const { checkTokens } = require('../../../../middlewares/auth');
 
-router.post('/', controller.request);
-router.post('/accept', controller.accept);
-router.post('/reject', controller.reject);
-router.post('/getRequests', controller.getRequests);
+router.post('/', checkTokens, controller.request);
+router.post('/accept', checkTokens, controller.accept);
+router.post('/reject', checkTokens, controller.reject);
+router.get('/getRequests', checkTokens, controller.getRequests);
 
 module.exports = router;
