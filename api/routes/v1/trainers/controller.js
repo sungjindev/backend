@@ -61,7 +61,6 @@ const login = async(req,res,next) => {
 };
 
 const logout = async(req,res,next) => {
-  const {params: {trainerPhoneNumber}} = req;
   try {
     const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
     if(!accessToken)
@@ -73,7 +72,6 @@ const logout = async(req,res,next) => {
     trainer = await Trainer.findByPk(accessToken.trainerId);
     if(!trainer)
       return next(INVALID_TRAINER_PHONE);
-
 
     // const refreshToken = await RefreshToken.destroy({where: {trainerId: trainer.id}});  //db에서 trainer와 연결된 refreshToken 제거
     // if(!refreshToken)

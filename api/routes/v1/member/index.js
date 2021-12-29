@@ -3,7 +3,7 @@ const router = Router();
 const controller = require('./controller');
 const { checkTokens } = require('../../../../middlewares/auth');
 
-router.post('/getMembers', checkTokens, controller.getMembers);
+router.get('/getMembers', checkTokens, controller.getMembers);
 router.post('/deleteMember', checkTokens, controller.deleteMember);
 router.put('/expired', checkTokens, controller.putExpired);
 
