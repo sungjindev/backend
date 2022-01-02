@@ -4,5 +4,6 @@ const controller = require('./controller');
 const { checkTokens } = require('../../../../middlewares/auth');
 
 router.post('/', checkTokens, controller.addRecord);
+router.post('/', checkTokens, controller.deleteRecord);
 
 module.exports = router;
