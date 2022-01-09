@@ -46,4 +46,13 @@ const deleteRecord = async(req,res,next) => {
   }
 };
 
-module.exports = { addRecord, deleteRecord };
+const getRecord = async(req,res,next) => {
+  try {
+    
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+module.exports = { addRecord, deleteRecord, getRecord };
