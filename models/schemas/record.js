@@ -10,9 +10,6 @@ module.exports = class Record extends Sequelize.Model {
         reps: {
           type: Sequelize.STRING(10)
         },
-        sets: {
-          type: Sequelize.STRING(10)
-        },
         type: {
           type: Sequelize.STRING(10)
         },
