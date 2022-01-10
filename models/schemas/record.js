@@ -4,15 +4,6 @@ module.exports = class Record extends Sequelize.Model {
   static init(sequelize) {
     return super.init (
       {
-        part: {
-          type: Sequelize.STRING(10)
-        },
-        equipment: {
-          type: Sequelize.STRING(10)
-        },
-        name: {
-          type: Sequelize.STRING(30)
-        },
         kg: {
           type: Sequelize.STRING(10)
         },
@@ -45,5 +36,6 @@ module.exports = class Record extends Sequelize.Model {
   static associate(db) {
     db.Record.belongsTo(db.Trainer, {foreignKey: "trainerId", targetKey: "id"});
     db.Record.belongsTo(db.Trainee, {foreignKey: "traineeId", targetKey: "id"});
+    db.Record.belongsTo(db.Exercise, {foreignKey: "exerciseId", targetKey: "id"});
   }
 };

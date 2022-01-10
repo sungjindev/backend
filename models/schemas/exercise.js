@@ -12,6 +12,9 @@ module.exports = class Exercise extends Sequelize.Model {
         },
         name: {
           type: Sequelize.STRING(30)
+        },
+        unit: {
+          type: Sequelize.STRING(3)
         }
       },
       {
@@ -28,5 +31,6 @@ module.exports = class Exercise extends Sequelize.Model {
   }
 
   static associate(db) {
+    db.Exercise.hasMany(db.Record, {foreignKey: "exerciseId", sourceKey: "id"});
   }
 };
