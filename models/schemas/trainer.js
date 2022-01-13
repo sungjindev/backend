@@ -32,6 +32,7 @@ module.exports = class Trainer extends Sequelize.Model {
 
   static associate(db) {
     db.Trainer.hasMany(db.Trainee, {foreignKey: "trainerId", sourceKey: "id"});
+    db.Trainer.hasMany(db.Record, {foreignKey: "trainerId", sourceKey: "id"});
     // db.Trainer.hasOne(db.RefreshToken, {foreignKey: "trainerId", sourceKey: "id"});
   }
 };
