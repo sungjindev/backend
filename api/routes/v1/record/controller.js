@@ -4,17 +4,17 @@ const { JSON_WEB_TOKEN_ERROR, EXCEEDED_AUTH_ATTEMPTS, EXCEEDED_SMS_ATTEMPTS, AUT
 const { verifyToken } = require('../../../../utils/jwt');
 
 const addRecord = async(req,res,next) => {
-  const {body: {type, date, records}} = req;
+  const {body: {isTrainer, phoneNumber, type, date, records}} = req;
   try { //Record에 필요한 값들이랑, Exercise에 필요한 name을 req로 받기
     const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
     if(!accessToken)
       return next(JSON_WEB_TOKEN_ERROR);
-
-    var isTrainer;
-    if(accessToken.trainerId)
-      isTrainer = true;
-    else if(accessToken.traineeId)
-      isTrainer = false;
+    
+    // var isTrainer;
+    // if(accessToken.trainerId)
+    //   isTrainer = true;
+    // else if(accessToken.traineeId)
+    //   isTrainer = false;
     
     for(const record of records) {
       const name = record.name;
@@ -24,7 +24,8 @@ const addRecord = async(req,res,next) => {
         const record = await Record.create({kg: set.kg, reps: set.reps, type, date});
 
         if(isTrainer) {
-          const trainer = await Trainer.findByPk(accessToken.trainerId);
+          // const trainer = await Trainer.findByPk(accessToken.trainerId);
+          const trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
           if(!trainer)
             return next(INVALID_TRAINER_PHONE);
 
@@ -36,7 +37,8 @@ const addRecord = async(req,res,next) => {
           await exercise.addRecord(record);
           
         } else {
-          const trainee = await Trainee.findByPk(accessToken.traineeId);
+          // const trainee = await Trainee.findByPk(accessToken.traineeId);
+          const trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
           if(!trainee)
             return next(INVALID_TRAINEE_PHONE);
 
