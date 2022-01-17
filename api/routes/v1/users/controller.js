@@ -18,10 +18,12 @@ const addGoal = async(req,res,next) => {
 
     if(isTrainer) {
       const trainer = await Trainer.findByPk(accessToken.trainerId);
-      
+      await trainer.update({goal});
+    } else {
+      const trainee = await Trainee.findByPk(accessToken.traineeId);
+      await trainee.update({goal});
     }
-
-    
+    return res.json(createResponse(res));
   } catch (error) {
     console.error(error);
     next(error);
