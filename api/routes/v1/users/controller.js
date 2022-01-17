@@ -18,9 +18,13 @@ const addGoal = async(req,res,next) => {
 
     if(isTrainer) {
       const trainer = await Trainer.findByPk(accessToken.trainerId);
+      if(!trainer)
+        return next(INVALID_TRAINER_PHONE);
       await trainer.update({goal});
     } else {
       const trainee = await Trainee.findByPk(accessToken.traineeId);
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
       await trainee.update({goal});
     }
     return res.json(createResponse(res));
