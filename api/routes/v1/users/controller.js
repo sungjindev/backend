@@ -53,7 +53,29 @@ const upload = multer({
 const uploadImage = async(req,res,next) => {
   try {
     console.log(req.file);
-    return res.json(createResponse(res, {url: `/${req.file.filename}`}));
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+
+    var isTrainer;
+    if(accessToken.trainerId)
+      isTrainer = true;
+    else if(accessToken.traineeId)
+      isTrainer = false;
+    
+    if(isTrainer) {
+      const trainer = await Trainer.findByPk(accessToken.trainerId);
+      if(!trainer)
+        return next(INVALID_TRAINER_PHONE);
+      await trainer.update({image: `/images/${req.file.filename}`});
+    } else {
+      const trainee = await Trainee.findByPk(accessToken.traineeId);
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
+      await trainee.update({image: `/images/${req.file.filename}`});
+    }
+
+    return res.json(createResponse(res, {image: `/images/${req.file.filename}`}));
   } catch (error) {
     console.error(error);
     next(error);
