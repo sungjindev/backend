@@ -4,5 +4,6 @@ const controller = require('./controller');
 const { checkTokens } = require('../../../../middlewares/auth');
 
 router.post('/goal', checkTokens, controller.addGoal);
+router.post('/uploadImage', checkTokens, controller.upload.single('img'), controller.uploadImage);
 
 module.exports = router;
