@@ -20,7 +20,7 @@ module.exports = class Trainee extends Sequelize.Model {
           type: Sequelize.BOOLEAN,
           defaultValue: false,
         },
-        goal: {
+        image: {
           type: Sequelize.STRING(100),
           defaultValue: null
         }
