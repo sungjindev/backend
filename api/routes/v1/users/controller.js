@@ -82,4 +82,13 @@ const uploadImage = async(req,res,next) => {
   }
 };
 
-module.exports = { addGoal, upload, uploadImage };
+const getImage = async(req,res,next) => {
+  try {
+    
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+module.exports = { addGoal, upload, uploadImage, getImage };
