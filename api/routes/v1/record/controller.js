@@ -72,11 +72,9 @@ const getRecords = async(req,res,next) => {
     if(isTrainer) {
       const trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
       records = await trainer.getRecords({where: {date: {[Op.like]:`${yearMonth}%`}}, order: [['date', 'ASC']]});
-      console.log(records);
     } else {
       const trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
       records = await trainee.getRecords({where: {date: {[Op.like]:`${yearMonth}%`}}, order: [['date', 'ASC']]});
-      console.log(records);
     }
 
 
