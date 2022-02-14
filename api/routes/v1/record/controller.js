@@ -68,6 +68,7 @@ const getRecords = async(req,res,next) => {
       return next(JSON_WEB_TOKEN_ERROR);
     
     var records;
+    var response = [];
 
     if(isTrainer) {
       const trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
