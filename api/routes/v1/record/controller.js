@@ -68,17 +68,60 @@ const getRecords = async(req,res,next) => {
       return next(JSON_WEB_TOKEN_ERROR);
     
     var records;
-    var response = [];
+    var responses = [];    
+    var dates = new Set();
+    var trainer;
+    var trainee;
 
     if(isTrainer) {
-      const trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
+      trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
+      if(!trainer)
+        return next(INVALID_TRAINER_PHONE);
       records = await trainer.getRecords({where: {date: {[Op.like]:`${yearMonth}%`}}, order: [['date', 'ASC']]});
     } else {
-      const trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
+      trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
       records = await trainee.getRecords({where: {date: {[Op.like]:`${yearMonth}%`}}, order: [['date', 'ASC']]});
     }
 
+    for(const record of records) {
+      dates.add(record.date);
+    }
 
+    console.log(dates);
+
+    for(const date of dates) {
+      const exerciseIds = new Set();
+      for(const record of records) {
+        if(record.date === date)
+          exerciseIds.add(record.exerciseId);
+      }
+      let arrayIds = [];
+      exerciseIds.forEach(v => arrayIds.push(v));
+      arrayIds.sort(function (a,b) {
+        return a-b;
+      });
+
+
+      for(const arrayId of arrayIds) {
+        var sets = [];
+        var type;
+        for(const record of records) {
+          if(record.date === date && record.exerciseId === arrayId) {
+            const temp = { kg: record.kg, reps: record.reps };
+            type = record.type;
+            sets.push(temp);
+          }
+        }
+        const exercise = await Exercise.findByPk(arrayId);
+        const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: type, sets: sets };
+        responses.push(response);
+      }
+
+      console.log(responses);
+
+    }
     
     return res.json(createResponse(res));
   } catch (error) {
