@@ -88,9 +88,8 @@ const getRecords = async(req,res,next) => {
     for(const record of records) {
       dates.add(record.date);
     }
-
     console.log(dates);
-
+    
     for(const date of dates) {
       const exerciseIds = new Set();
       for(const record of records) {
@@ -102,7 +101,6 @@ const getRecords = async(req,res,next) => {
       arrayIds.sort(function (a,b) {
         return a-b;
       });
-
 
       for(const arrayId of arrayIds) {
         var sets = [];
