@@ -77,12 +77,12 @@ const getRecords = async(req,res,next) => {
       trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
       if(!trainer)
         return next(INVALID_TRAINER_PHONE);
-      records = await trainer.getRecords({where: {date: {[Op.like]:`${yearMonth}%`}}, order: [['date', 'ASC']]});
+      records = await trainer.getRecords({where: {date: {[Op.like]:`${yearMonth}%`}}, order: [['date', 'ASC'], ['id', 'ASC']]});
     } else {
       trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
       if(!trainee)
         return next(INVALID_TRAINEE_PHONE);
-      records = await trainee.getRecords({where: {date: {[Op.like]:`${yearMonth}%`}}, order: [['date', 'ASC']]});
+      records = await trainee.getRecords({where: {date: {[Op.like]:`${yearMonth}%`}}, order: [['date', 'ASC'], ['id', 'ASC']]});
     }
 
     for(const record of records) {
@@ -118,12 +118,10 @@ const getRecords = async(req,res,next) => {
         const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: type, sets: sets };
         responses.push(response);
       }
-
-      console.log(responses);
-
     }
+    console.log(responses);
     
-    return res.json(createResponse(res));
+    return res.json(createResponse(res, responses));
   } catch (error) {
     console.error(error);
     next(error);
