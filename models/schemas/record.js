@@ -14,7 +14,7 @@ module.exports = class Record extends Sequelize.Model {
           type: Sequelize.STRING(10)
         },
         date: {
-          type: Sequelize.DATEONLY
+          type: Sequelize.STRING(10)
         }
       },
       {
