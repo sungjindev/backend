@@ -23,6 +23,10 @@ module.exports = class Trainer extends Sequelize.Model {
         image: {
           type: Sequelize.STRING(100),
           defaultValue: null
+        },
+        center: {
+          type: Sequelize.STRING(100),
+          defaultValue: null
         }
       },
       {
