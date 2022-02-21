@@ -27,6 +27,10 @@ module.exports = class Trainee extends Sequelize.Model {
         image: {
           type: Sequelize.STRING(100),
           defaultValue: null
+        },
+        inbody: {
+          type: Sequelize.STRING(100),
+          defaultValue: null
         }
       },
       {
