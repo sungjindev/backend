@@ -34,10 +34,10 @@ const addGoal = async(req,res,next) => {
   }
 };
 
-const upload = multer({
+const uploadProfile = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
-      cb(null, 'images/');
+      cb(null, 'images/profile/');
     },
     filename(req, file, cb) {
       const ext = path.extname(file.originalname);
@@ -117,4 +117,4 @@ const getImage = async(req,res,next) => {
   }
 };
 
-module.exports = { addGoal, upload, uploadImage, uploadInbody, getImage };
+module.exports = { addGoal, uploadProfile, uploadImage, uploadInbody, getImage };
