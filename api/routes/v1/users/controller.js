@@ -79,6 +79,35 @@ const uploadImage = async(req,res,next) => {
   }
 };
 
+const uploadInbody = async(req,res,next) => {
+  try {
+    console.log(req.file);
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+
+    var isTrainer;
+    if(accessToken.trainerId)
+      isTrainer = true;
+    else if(accessToken.traineeId)
+      isTrainer = false;
+    
+    if(isTrainer) {
+      return next(INVALID_TRAINEE_PHONE);
+    } else {
+      const trainee = await Trainee.findByPk(accessToken.traineeId);
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
+      await trainee.update({inbody: `/images/inbody/${req.file.filename}`});
+    }
+
+    return res.json(createResponse(res, {image: `/images/inbody/${req.file.filename}`}));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 const getImage = async(req,res,next) => {
   try {
     
@@ -88,4 +117,4 @@ const getImage = async(req,res,next) => {
   }
 };
 
-module.exports = { addGoal, upload, uploadImage, getImage };
+module.exports = { addGoal, upload, uploadImage, uploadInbody, getImage };
