@@ -77,15 +77,15 @@ const uploadProfileImage = async(req,res,next) => {
       const trainer = await Trainer.findByPk(accessToken.trainerId);
       if(!trainer)
         return next(INVALID_TRAINER_PHONE);
-      await trainer.update({image: `/images/${req.file.filename}`});
+      await trainer.update({image: `/images/profile/${req.file.filename}`});
     } else {
       const trainee = await Trainee.findByPk(accessToken.traineeId);
       if(!trainee)
         return next(INVALID_TRAINEE_PHONE);
-      await trainee.update({image: `/images/${req.file.filename}`});
+      await trainee.update({image: `/images/profile/${req.file.filename}`});
     }
 
-    return res.json(createResponse(res, {image: `/images/${req.file.filename}`}));
+    return res.json(createResponse(res, {image: `/images/profile/${req.file.filename}`}));
   } catch (error) {
     console.error(error);
     next(error);
