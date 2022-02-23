@@ -47,7 +47,20 @@ const uploadProfile = multer({
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-const uploadImage = async(req,res,next) => {
+const uploadInbody = multer({
+  storage: multer.diskStorage({
+    destination(req, file, cb) {
+      cb(null, 'images/inbody/');
+    },
+    filename(req, file, cb) {
+      const ext = path.extname(file.originalname);
+      cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+    }
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
+
+const uploadProfileImage = async(req,res,next) => {
   try {
     console.log(req.file);
     const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
@@ -79,7 +92,7 @@ const uploadImage = async(req,res,next) => {
   }
 };
 
-const uploadInbody = async(req,res,next) => {
+const uploadInbodyImage = async(req,res,next) => {
   try {
     console.log(req.file);
     const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
@@ -117,4 +130,4 @@ const getImage = async(req,res,next) => {
   }
 };
 
-module.exports = { addGoal, uploadProfile, uploadImage, uploadInbody, getImage };
+module.exports = { addGoal, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getImage };
