@@ -121,7 +121,7 @@ const uploadInbodyImage = async(req,res,next) => {
   }
 };
 
-const getImage = async(req,res,next) => {
+const getProfileImage = async(req,res,next) => {
   try {
     
   } catch (error) {
@@ -130,4 +130,4 @@ const getImage = async(req,res,next) => {
   }
 };
 
-module.exports = { addGoal, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getImage };
+module.exports = { addGoal, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getProfileImage };
