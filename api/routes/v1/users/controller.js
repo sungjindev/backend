@@ -130,4 +130,14 @@ const getProfileImage = async(req,res,next) => {
   }
 };
 
+const getInbodyImage = async(req,res,next) => {
+  try {
+    
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+
 module.exports = { addGoal, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getProfileImage };
