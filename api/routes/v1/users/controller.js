@@ -134,6 +134,7 @@ const getProfileImage = async(req,res,next) => {
 const getInbodyImage = async(req,res,next) => {
   try {
     console.log(test);
+    return res.json(createResponse(res));
   } catch (error) {
     console.error(error);
     next(error);
