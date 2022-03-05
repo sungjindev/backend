@@ -20,10 +20,7 @@ const addGoal = async(req,res,next) => {
       isTrainer = false;
 
     if(isTrainer) {
-      const trainer = await Trainer.findByPk(accessToken.trainerId);
-      if(!trainer)
-        return next(INVALID_TRAINER_PHONE);
-      await trainer.update({goal});
+      return next(INVALID_TRAINEE_PHONE);
     } else {
       const trainee = await Trainee.findByPk(accessToken.traineeId);
       if(!trainee)
@@ -37,10 +34,10 @@ const addGoal = async(req,res,next) => {
   }
 };
 
-const upload = multer({
+const uploadProfile = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
-      cb(null, 'images/');
+      cb(null, 'images/profile/');
     },
     filename(req, file, cb) {
       const ext = path.extname(file.originalname);
@@ -50,7 +47,20 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-const uploadImage = async(req,res,next) => {
+const uploadInbody = multer({
+  storage: multer.diskStorage({
+    destination(req, file, cb) {
+      cb(null, 'images/inbody/');
+    },
+    filename(req, file, cb) {
+      const ext = path.extname(file.originalname);
+      cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+    }
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
+
+const uploadProfileImage = async(req,res,next) => {
   try {
     console.log(req.file);
     const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
@@ -67,28 +77,68 @@ const uploadImage = async(req,res,next) => {
       const trainer = await Trainer.findByPk(accessToken.trainerId);
       if(!trainer)
         return next(INVALID_TRAINER_PHONE);
-      await trainer.update({image: `/images/${req.file.filename}`});
+      await trainer.update({image: `/images/profile/${req.file.filename}`});
     } else {
       const trainee = await Trainee.findByPk(accessToken.traineeId);
       if(!trainee)
         return next(INVALID_TRAINEE_PHONE);
-      await trainee.update({image: `/images/${req.file.filename}`});
+      await trainee.update({image: `/images/profile/${req.file.filename}`});
     }
 
-    return res.json(createResponse(res, {image: `/images/${req.file.filename}`}));
+    return res.json(createResponse(res, {image: `/images/profile/${req.file.filename}`}));
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
 
-const getImage = async(req,res,next) => {
+const uploadInbodyImage = async(req,res,next) => {
   try {
+    console.log(req.file);
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+
+    var isTrainer;
+    if(accessToken.trainerId)
+      isTrainer = true;
+    else if(accessToken.traineeId)
+      isTrainer = false;
     
+    if(isTrainer) {
+      return next(INVALID_TRAINEE_PHONE);
+    } else {
+      const trainee = await Trainee.findByPk(accessToken.traineeId);
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
+      await trainee.update({inbody: `/images/inbody/${req.file.filename}`});
+    }
+
+    return res.json(createResponse(res, {image: `/images/inbody/${req.file.filename}`}));
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
 
-module.exports = { addGoal, upload, uploadImage, getImage };
+const getProfileImage = async(req,res,next) => {
+  try {
+    return res.json(createResponse(res));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+const getInbodyImage = async(req,res,next) => {
+  try {
+    console.log(test);
+    return res.json(createResponse(res));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+
+module.exports = { addGoal, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getProfileImage };
