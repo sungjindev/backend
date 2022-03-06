@@ -121,6 +121,26 @@ const resetPassword = async(req,res,next) => {
   }
 };
 
+const getTrainer = async(req,res,next) => {
+  try {
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+    var trainer;
+    if(accessToken.traineeId)
+      return next(INVALID_TRAINER_PHONE);
+
+    trainer = await Trainer.findByPk(accessToken.trainerId);
+    if(!trainer)
+      return next(INVALID_TRAINER_PHONE);
+    
+    return res.json(createResponse(res, trainer));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 const test = async(req,res,next) => {
   try {
     console.log("성 공 적");
@@ -135,4 +155,4 @@ const test = async(req,res,next) => {
   }
 };
 
-module.exports = { register, login, logout, resetPassword, test };
+module.exports = { register, login, logout, resetPassword, getTrainer, test };

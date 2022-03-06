@@ -7,6 +7,6 @@ router.post('/register', controller.register);
 router.post('/login', controller.login);
 router.get('/logout', checkTokens, controller.logout);
 router.patch('/resetPassword', checkTokens, controller.resetPassword);
-router.get('/', checkTokens, controller.test);
+router.get('/', checkTokens, controller.getTrainee);
 
 module.exports = router;
