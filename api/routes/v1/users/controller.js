@@ -62,6 +62,34 @@ const addIntroduction = async(req,res,next) => {
   }
 };
 
+const addCenter = async(req,res,next) => {
+  const {body: {center}} = req;
+  try {
+    const accessToken = verifyToken(req.headers.authorization.split('Bearer ')[1]);
+    if(!accessToken)
+      return next(JSON_WEB_TOKEN_ERROR);
+
+    var isTrainer;
+    if(accessToken.trainerId)
+      isTrainer = true;
+    else if(accessToken.traineeId)
+      isTrainer = false;
+
+    if(!isTrainer) {
+      return next(INVALID_TRAINER_PHONE);
+    } else {
+      const trainer = await Trainer.findByPk(accessToken.trainerId);
+      if(!trainer)
+        return next(INVALID_TRAINER_PHONE);
+      await trainer.update({center});
+    }
+    return res.json(createResponse(res));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 const uploadProfile = multer({
   storage: multer.diskStorage({
     destination(req, file, cb) {
@@ -169,4 +197,4 @@ const getInbodyImage = async(req,res,next) => {
 };
 
 
-module.exports = { addGoal, addIntroduction, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getProfileImage };
+module.exports = { addGoal, addIntroduction, addCenter, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getProfileImage };
