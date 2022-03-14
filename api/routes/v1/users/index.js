@@ -9,5 +9,6 @@ router.post('/center', checkTokens, controller.addCenter);
 router.post('/upload/profileImage', checkTokens, controller.uploadProfile.single('img'), controller.uploadProfileImage);
 router.post('/upload/inbodyImage', checkTokens, controller.uploadInbody.single('img'), controller.uploadInbodyImage);
 router.get('/getProfileImage', checkTokens, controller.getProfileImage);
+router.get('/getInbodyImage', checkTokens, controller.getInbodyImage);
 
 module.exports = router;

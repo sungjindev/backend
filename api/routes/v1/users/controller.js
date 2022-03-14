@@ -196,5 +196,4 @@ const getInbodyImage = async(req,res,next) => {
   }
 };
 
-
-module.exports = { addGoal, addIntroduction, addCenter, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getProfileImage };
+module.exports = { addGoal, addIntroduction, addCenter, uploadProfile, uploadInbody, uploadProfileImage, uploadInbodyImage, getProfileImage, getInbodyImage };
