@@ -11,6 +11,7 @@ const addRecords = async(req,res,next) => {
     if(!accessToken)
       return next(JSON_WEB_TOKEN_ERROR);
 
+      
     // var isTrainer;
     // if(accessToken.trainerId)
     //   isTrainer = true;
