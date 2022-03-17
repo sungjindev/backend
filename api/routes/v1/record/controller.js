@@ -11,12 +11,15 @@ const addRecords = async(req,res,next) => {
     if(!accessToken)
       return next(JSON_WEB_TOKEN_ERROR);
 
-      
+
     // var isTrainer;
     // if(accessToken.trainerId)
     //   isTrainer = true;
     // else if(accessToken.traineeId)
     //   isTrainer = false;
+    
+
+    // add logic
     
     for(const record of records) {
       const name = record.name;
