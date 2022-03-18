@@ -11,15 +11,21 @@ const addRecords = async(req,res,next) => {
     if(!accessToken)
       return next(JSON_WEB_TOKEN_ERROR);
 
+    let trainer, trainee;
 
-    // var isTrainer;
-    // if(accessToken.trainerId)
-    //   isTrainer = true;
-    // else if(accessToken.traineeId)
-    //   isTrainer = false;
-    
+    if(isTrainer) {
+      trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
+      if(!trainer)
+        return next(INVALID_TRAINER_PHONE);
+      
+      await Record.destroy({where: {trainerId: trainer.id, date: date, type: type}});
+    } else {
+      trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
 
-    // add logic
+      await Record.destroy({where: {traineeId: trainee.id, date: date, type: type}});
+    }
     
     for(const record of records) {
       const name = record.name;
@@ -30,9 +36,9 @@ const addRecords = async(req,res,next) => {
 
         if(isTrainer) {
           // const trainer = await Trainer.findByPk(accessToken.trainerId);
-          const trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
-          if(!trainer)
-            return next(INVALID_TRAINER_PHONE);
+          // const trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
+          // if(!trainer)
+          //   return next(INVALID_TRAINER_PHONE);
           
           const exercise = await Exercise.findOne({where: {name}});
           if(!exercise)
@@ -43,9 +49,9 @@ const addRecords = async(req,res,next) => {
           
         } else {
           // const trainee = await Trainee.findByPk(accessToken.traineeId);
-          const trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
-          if(!trainee)
-            return next(INVALID_TRAINEE_PHONE);
+          // const trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
+          // if(!trainee)
+          //   return next(INVALID_TRAINEE_PHONE);
 
           const exercise = await Exercise.findOne({where: {name}});
           if(!exercise)
