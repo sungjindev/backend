@@ -113,18 +113,34 @@ const getRecords = async(req,res,next) => {
       });
 
       for(const arrayId of arrayIds) {
-        var sets = [];
+        var setsAT = [];
+        var setsPT = [];
         var type;
         for(const record of records) {
           if(record.date === date && record.exerciseId === arrayId) {
             const temp = { kg: record.kg, reps: record.reps };
-            type = record.type;
-            sets.push(temp);
+            // type = record.type;
+            // sets.push(temp);
+
+            if(record.type === "AT")
+              setsAT.push(temp);
+            else if(record.type === "PT")
+              setsPT.push(temp);
           }
         }
         const exercise = await Exercise.findByPk(arrayId);
-        const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: type, sets: sets };
-        responses.push(response);
+
+        if(setsAT.length != 0) {
+          const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: "AT", sets: setsAT };
+          responses.push(response);
+        }
+
+        if(setsPT.length != 0) {
+          const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: "PT", sets: setsPT };
+          responses.push(response);
+        }
+        // const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: type, sets: sets };
+        // responses.push(response);
       }
     }
     console.log(responses);
