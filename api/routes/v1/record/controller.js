@@ -11,11 +11,21 @@ const addRecords = async(req,res,next) => {
     if(!accessToken)
       return next(JSON_WEB_TOKEN_ERROR);
 
-    // var isTrainer;
-    // if(accessToken.trainerId)
-    //   isTrainer = true;
-    // else if(accessToken.traineeId)
-    //   isTrainer = false;
+    let trainer, trainee;
+
+    if(isTrainer) {
+      trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
+      if(!trainer)
+        return next(INVALID_TRAINER_PHONE);
+      
+      await Record.destroy({where: {trainerId: trainer.id, date: date, type: type}});
+    } else {
+      trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
+      if(!trainee)
+        return next(INVALID_TRAINEE_PHONE);
+
+      await Record.destroy({where: {traineeId: trainee.id, date: date, type: type}});
+    }
     
     for(const record of records) {
       const name = record.name;
@@ -26,9 +36,9 @@ const addRecords = async(req,res,next) => {
 
         if(isTrainer) {
           // const trainer = await Trainer.findByPk(accessToken.trainerId);
-          const trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
-          if(!trainer)
-            return next(INVALID_TRAINER_PHONE);
+          // const trainer = await Trainer.findOne({where: {trainerPhoneNumber: phoneNumber}});
+          // if(!trainer)
+          //   return next(INVALID_TRAINER_PHONE);
           
           const exercise = await Exercise.findOne({where: {name}});
           if(!exercise)
@@ -39,9 +49,9 @@ const addRecords = async(req,res,next) => {
           
         } else {
           // const trainee = await Trainee.findByPk(accessToken.traineeId);
-          const trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
-          if(!trainee)
-            return next(INVALID_TRAINEE_PHONE);
+          // const trainee = await Trainee.findOne({where: {traineePhoneNumber: phoneNumber}});
+          // if(!trainee)
+          //   return next(INVALID_TRAINEE_PHONE);
 
           const exercise = await Exercise.findOne({where: {name}});
           if(!exercise)
@@ -103,18 +113,34 @@ const getRecords = async(req,res,next) => {
       });
 
       for(const arrayId of arrayIds) {
-        var sets = [];
+        var setsAT = [];
+        var setsPT = [];
         var type;
         for(const record of records) {
           if(record.date === date && record.exerciseId === arrayId) {
             const temp = { kg: record.kg, reps: record.reps };
-            type = record.type;
-            sets.push(temp);
+            // type = record.type;
+            // sets.push(temp);
+
+            if(record.type === "AT")
+              setsAT.push(temp);
+            else if(record.type === "PT")
+              setsPT.push(temp);
           }
         }
         const exercise = await Exercise.findByPk(arrayId);
-        const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: type, sets: sets };
-        responses.push(response);
+
+        if(setsAT.length != 0) {
+          const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: "AT", sets: setsAT };
+          responses.push(response);
+        }
+
+        if(setsPT.length != 0) {
+          const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: "PT", sets: setsPT };
+          responses.push(response);
+        }
+        // const response = { date: date, name: exercise.name, part: exercise.part, unit: exercise.unit, type: type, sets: sets };
+        // responses.push(response);
       }
     }
     console.log(responses);
