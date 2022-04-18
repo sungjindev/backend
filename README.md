@@ -4,3 +4,5 @@ PiPi는 트레이너와 트레이니 모두를 위한 무료 헬스케어 어플
 
 자세한 API 명세는 SwaggerHub에 있습니다.
 추후에 Java SpringBoot 기반으로 업데이트할 예정입니다. 
+
+문의는 xy.logandev@gmail.com으로 메일 부탁드립니다.
